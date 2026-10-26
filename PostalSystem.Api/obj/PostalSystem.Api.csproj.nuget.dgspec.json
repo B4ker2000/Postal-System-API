@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\a.ahmadali\\Desktop\\postal-system-api\\PostalSystem.Api\\PostalSystem.Api.csproj": {}
+    "C:\\Users\\a.ahmadali\\Desktop\\Postal-System-API\\PostalSystem.Api\\PostalSystem.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\a.ahmadali\\Desktop\\postal-system-api\\PostalSystem.Api\\PostalSystem.Api.csproj": {
+    "C:\\Users\\a.ahmadali\\Desktop\\Postal-System-API\\PostalSystem.Api\\PostalSystem.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\a.ahmadali\\Desktop\\postal-system-api\\PostalSystem.Api\\PostalSystem.Api.csproj",
+        "projectUniqueName": "C:\\Users\\a.ahmadali\\Desktop\\Postal-System-API\\PostalSystem.Api\\PostalSystem.Api.csproj",
         "projectName": "PostalSystem.Api",
-        "projectPath": "C:\\Users\\a.ahmadali\\Desktop\\postal-system-api\\PostalSystem.Api\\PostalSystem.Api.csproj",
+        "projectPath": "C:\\Users\\a.ahmadali\\Desktop\\Postal-System-API\\PostalSystem.Api\\PostalSystem.Api.csproj",
         "packagesPath": "C:\\Users\\a.ahmadali\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\a.ahmadali\\Desktop\\postal-system-api\\PostalSystem.Api\\obj\\",
+        "outputPath": "C:\\Users\\a.ahmadali\\Desktop\\Postal-System-API\\PostalSystem.Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\a.ahmadali\\AppData\\Roaming\\NuGet\\NuGet.Config"
