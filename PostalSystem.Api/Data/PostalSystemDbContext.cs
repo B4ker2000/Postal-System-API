@@ -1,14 +1,12 @@
-using System.Security.Authentication;
 using Microsoft.EntityFrameworkCore;
-using PostalSystem.Api.Data;
 using PostalSystem.Api.Models;
 
 namespace PostalSystem.Api.Data;
 
 public class PostalSystemDbContext : DbContext
 {
-    public PostalSystemDbContext(DbContextOptions<PostalSystemDbContext>options)
-        : base(options){}
+    public PostalSystemDbContext(DbContextOptions<PostalSystemDbContext> options)
+        : base(options) { }
 
     public DbSet<City> Cities { get; set; }
     public DbSet<Warehouse> Warehouses { get; set; }
@@ -30,25 +28,13 @@ public class PostalSystemDbContext : DbContext
             .IsUnique();
             
         modelBuilder.Entity<EventType>()
-            .HasIndex(e => e.EventTypeName)
-            .IsUnique();
+            .HasIndex(e => e.EventTypeName) // Change into a code like AA20 which is unique to 
+            .IsUnique();                    // each EventTypeName + separate configurations
 
         modelBuilder.Entity<Package>()
-            .HasOne(p => p.OriginWarehouse)
-            .WithMany(w => w.PackagesOrigin)
-            .HasForeignKey(p => p.OriginWarehouseId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Package>()
-            .HasOne(p => p.CurrentWarehouse)
-            .WithMany(w => w.PackagesCurrent)
-            .HasForeignKey(p => p.CurrentWarehouseId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<Package>()
-            .HasOne(p => p.FinalDestinationWarehouse)
-            .WithMany(w => w.PackagesDestination)
-            .HasForeignKey(p => p.FinalDestinationWarehouseId)
+            .HasOne(p => p.FinalDestinationCity)
+            .WithMany()
+            .HasForeignKey(p => p.FinalDestinationCityId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
