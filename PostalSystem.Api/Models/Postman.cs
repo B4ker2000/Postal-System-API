@@ -6,7 +6,7 @@ namespace PostalSystem.Api.Models
         public int WarehouseId { get; set; }
         public string? Name { get; set; }
         public string? Phone { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; } = false;
         
         public Warehouse? Warehouse { get; set; }
         public ICollection<Package> Packages { get; set; } = new List<Package>();

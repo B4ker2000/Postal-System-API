@@ -86,6 +86,9 @@ namespace PostalSystem.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventTypeId"));
 
+                    b.Property<byte>("Category")
+                        .HasColumnType("tinyint");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
