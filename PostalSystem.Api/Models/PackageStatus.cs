@@ -4,7 +4,7 @@ namespace PostalSystem.Api.Models
     {
         Registered = 1,
         InWarehouse = 2,
-        InTransitToDestination = 3,
+        InTransit = 3,
         Delivered = 4,
         Canceled = 5
     }

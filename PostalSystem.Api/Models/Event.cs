@@ -5,7 +5,7 @@ namespace PostalSystem.Api.Models
     public class Event
     {
         public int EventId { get; set; }
-        public int PackageId { get; set; }
+        public Guid PackageId { get; set; }
         public int EventTypeId { get; set; }
         public int? PostmanId { get; set; }
         public int? WarehouseId { get; set; }
