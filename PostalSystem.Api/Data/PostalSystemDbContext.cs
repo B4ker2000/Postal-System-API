@@ -19,22 +19,6 @@ public class PostalSystemDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Postman>()
-            .HasIndex(p => p.Phone)
-            .IsUnique();
-
-        modelBuilder.Entity<Package>()
-            .HasIndex(p => p.TrackingGuid)
-            .IsUnique();
-            
-        modelBuilder.Entity<EventType>()
-            .HasIndex(e => e.EventTypeName) // Change into a code like AA20 which is unique to 
-            .IsUnique();                    // each EventTypeName + separate configurations
-
-        modelBuilder.Entity<Package>()
-            .HasOne(p => p.FinalDestinationCity)
-            .WithMany()
-            .HasForeignKey(p => p.FinalDestinationCityId)
-            .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PostalSystemDbContext).Assembly);
     }
 }

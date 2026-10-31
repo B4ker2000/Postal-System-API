@@ -16,24 +16,19 @@ namespace PostalSystem.Api.Services
 
         public async Task<Package> RegisterPackageAsync(int postmanId, RegisterPackageDto dto)
         {
-            // 1. Find the logged-in postman and their assigned warehouse
-            var postman = _context.Postmen
-                .FirstOrDefault(p => p.PostmanId == postmanId && p.IsActive);
+            // 1. Validate the postman and get their home warehouse
+            var postman = await _context.Postmen
+                .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
 
             if (postman == null)
-            {
                 throw new ArgumentException("Active postman not found.");
-            }
 
-            // 2. Generate random tracking GUID and a 6-digit OTP code
-            var trackingGuid = Guid.NewGuid();
-            var deliveryOtp = new Random().Next(100000, 999999).ToString();
-
-            // 3. Construct the package entity using business constraints
+            // 2. Create the Package entity
+            // Also generate a random tracking GUID and a 6-digit OTP code
             var package = new Package
             {
-                TrackingGuid = trackingGuid,
-                DeliveryOTP = deliveryOtp,
+                TrackingGuid = Guid.NewGuid(),
+                DeliveryOTP = new Random().Next(100000, 999999).ToString(),
                 FinalDestinationCityId = dto.FinalDestinationCityId,
                 DestinationAddress = dto.DestinationAddress,
                 IsFlaggedAsFragile = dto.IsFlaggedAsFragile,
@@ -41,11 +36,29 @@ namespace PostalSystem.Api.Services
                 IsCanceled = false
             };
 
-            // 4. Save to the database
             _context.Packages.Add(package);
-            await _context.SaveChangesAsync();
 
-            // 5. TODO: Add Event logging here
+            // 3. Create the "Registered" Event 
+            var registeredEventType = await _context.EventTypes
+                .FirstOrDefaultAsync(et => et.Code == "NP1");
+
+            if (registeredEventType == null)
+                throw new InvalidOperationException("Event type 'NP1' not found in database.");
+
+            var registrationEvent = new Event
+            {
+                Package = package,
+                EventType = registeredEventType,
+                PostmanId = postmanId,
+                WarehouseId = postman.WarehouseId, // This marks the Origin!
+                Timestamp = DateTime.UtcNow,
+                Details = "Package registered into the system." // take from eventType desc perhaps?
+            };
+
+            _context.Events.Add(registrationEvent);
+
+            // 4. Save everything in one transaction
+            await _context.SaveChangesAsync();
 
             return package;
         }

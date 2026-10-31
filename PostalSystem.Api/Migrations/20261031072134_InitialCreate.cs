@@ -30,8 +30,10 @@ namespace PostalSystem.Api.Migrations
                 {
                     EventTypeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EventTypeName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EventTypeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Category = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,45 +86,29 @@ namespace PostalSystem.Api.Migrations
                 name: "Packages",
                 columns: table => new
                 {
-                    PackageId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     TrackingGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DeliveryOTP = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OriginWarehouseId = table.Column<int>(type: "int", nullable: false),
-                    CurrentWarehouseId = table.Column<int>(type: "int", nullable: false),
-                    FinalDestinationWarehouseId = table.Column<int>(type: "int", nullable: false),
+                    FinalDestinationCityId = table.Column<int>(type: "int", nullable: false),
                     DestinationAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CurrentPostmanId = table.Column<int>(type: "int", nullable: true),
                     IsFlaggedAsFragile = table.Column<bool>(type: "bit", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsCanceled = table.Column<bool>(type: "bit", nullable: false)
+                    CalculatedStatus = table.Column<int>(type: "int", nullable: false),
+                    IsCanceled = table.Column<bool>(type: "bit", nullable: false),
+                    PostmanId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Packages", x => x.PackageId);
+                    table.PrimaryKey("PK_Packages", x => x.TrackingGuid);
                     table.ForeignKey(
-                        name: "FK_Packages_Postmen_CurrentPostmanId",
-                        column: x => x.CurrentPostmanId,
+                        name: "FK_Packages_Cities_FinalDestinationCityId",
+                        column: x => x.FinalDestinationCityId,
+                        principalTable: "Cities",
+                        principalColumn: "CityId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Packages_Postmen_PostmanId",
+                        column: x => x.PostmanId,
                         principalTable: "Postmen",
                         principalColumn: "PostmanId");
-                    table.ForeignKey(
-                        name: "FK_Packages_Warehouses_CurrentWarehouseId",
-                        column: x => x.CurrentWarehouseId,
-                        principalTable: "Warehouses",
-                        principalColumn: "WarehouseId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Packages_Warehouses_FinalDestinationWarehouseId",
-                        column: x => x.FinalDestinationWarehouseId,
-                        principalTable: "Warehouses",
-                        principalColumn: "WarehouseId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Packages_Warehouses_OriginWarehouseId",
-                        column: x => x.OriginWarehouseId,
-                        principalTable: "Warehouses",
-                        principalColumn: "WarehouseId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -136,7 +122,8 @@ namespace PostalSystem.Api.Migrations
                     PostmanId = table.Column<int>(type: "int", nullable: true),
                     WarehouseId = table.Column<int>(type: "int", nullable: true),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PackageTrackingGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -148,10 +135,10 @@ namespace PostalSystem.Api.Migrations
                         principalColumn: "EventTypeId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Events_Packages_PackageId",
-                        column: x => x.PackageId,
+                        name: "FK_Events_Packages_PackageTrackingGuid",
+                        column: x => x.PackageTrackingGuid,
                         principalTable: "Packages",
-                        principalColumn: "PackageId",
+                        principalColumn: "TrackingGuid",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Events_Postmen_PostmanId",
@@ -171,9 +158,9 @@ namespace PostalSystem.Api.Migrations
                 column: "EventTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Events_PackageId",
+                name: "IX_Events_PackageTrackingGuid",
                 table: "Events",
-                column: "PackageId");
+                column: "PackageTrackingGuid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_PostmanId",
@@ -186,36 +173,20 @@ namespace PostalSystem.Api.Migrations
                 column: "WarehouseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EventTypes_EventTypeName",
+                name: "IX_EventTypes_Code",
                 table: "EventTypes",
-                column: "EventTypeName",
+                column: "Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Packages_CurrentPostmanId",
+                name: "IX_Packages_FinalDestinationCityId",
                 table: "Packages",
-                column: "CurrentPostmanId");
+                column: "FinalDestinationCityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Packages_CurrentWarehouseId",
+                name: "IX_Packages_PostmanId",
                 table: "Packages",
-                column: "CurrentWarehouseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Packages_FinalDestinationWarehouseId",
-                table: "Packages",
-                column: "FinalDestinationWarehouseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Packages_OriginWarehouseId",
-                table: "Packages",
-                column: "OriginWarehouseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Packages_TrackingGuid",
-                table: "Packages",
-                column: "TrackingGuid",
-                unique: true);
+                column: "PostmanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Postmen_Phone",
@@ -232,7 +203,8 @@ namespace PostalSystem.Api.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Warehouses_CityId",
                 table: "Warehouses",
-                column: "CityId");
+                column: "CityId",
+                unique: true);
         }
 
         /// <inheritdoc />

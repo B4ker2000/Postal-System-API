@@ -56,6 +56,9 @@ namespace PostalSystem.Api.Migrations
                     b.Property<int>("PackageId")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("PackageTrackingGuid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int?>("PostmanId")
                         .HasColumnType("int");
 
@@ -69,7 +72,7 @@ namespace PostalSystem.Api.Migrations
 
                     b.HasIndex("EventTypeId");
 
-                    b.HasIndex("PackageId");
+                    b.HasIndex("PackageTrackingGuid");
 
                     b.HasIndex("PostmanId");
 
@@ -89,16 +92,20 @@ namespace PostalSystem.Api.Migrations
                     b.Property<byte>("Category")
                         .HasColumnType("tinyint");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EventTypeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("EventTypeId");
 
-                    b.HasIndex("EventTypeName")
+                    b.HasIndex("Code")
                         .IsUnique();
 
                     b.ToTable("EventTypes");
@@ -106,16 +113,11 @@ namespace PostalSystem.Api.Migrations
 
             modelBuilder.Entity("PostalSystem.Api.Models.Package", b =>
                 {
-                    b.Property<int>("PackageId")
+                    b.Property<Guid>("TrackingGuid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PackageId"));
-
-                    b.Property<int?>("CurrentPostmanId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurrentWarehouseId")
+                    b.Property<int>("CalculatedStatus")
                         .HasColumnType("int");
 
                     b.Property<string>("DeliveryOTP")
@@ -126,7 +128,7 @@ namespace PostalSystem.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FinalDestinationWarehouseId")
+                    b.Property<int>("FinalDestinationCityId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsCanceled")
@@ -135,28 +137,14 @@ namespace PostalSystem.Api.Migrations
                     b.Property<bool>("IsFlaggedAsFragile")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OriginWarehouseId")
+                    b.Property<int?>("PostmanId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("TrackingGuid");
 
-                    b.Property<Guid>("TrackingGuid")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasIndex("FinalDestinationCityId");
 
-                    b.HasKey("PackageId");
-
-                    b.HasIndex("CurrentPostmanId");
-
-                    b.HasIndex("CurrentWarehouseId");
-
-                    b.HasIndex("FinalDestinationWarehouseId");
-
-                    b.HasIndex("OriginWarehouseId");
-
-                    b.HasIndex("TrackingGuid")
-                        .IsUnique();
+                    b.HasIndex("PostmanId");
 
                     b.ToTable("Packages");
                 });
@@ -209,7 +197,8 @@ namespace PostalSystem.Api.Migrations
 
                     b.HasKey("WarehouseId");
 
-                    b.HasIndex("CityId");
+                    b.HasIndex("CityId")
+                        .IsUnique();
 
                     b.ToTable("Warehouses");
                 });
@@ -224,7 +213,7 @@ namespace PostalSystem.Api.Migrations
 
                     b.HasOne("PostalSystem.Api.Models.Package", "Package")
                         .WithMany("Events")
-                        .HasForeignKey("PackageId")
+                        .HasForeignKey("PackageTrackingGuid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -247,35 +236,17 @@ namespace PostalSystem.Api.Migrations
 
             modelBuilder.Entity("PostalSystem.Api.Models.Package", b =>
                 {
-                    b.HasOne("PostalSystem.Api.Models.Postman", "CurrentPostman")
+                    b.HasOne("PostalSystem.Api.Models.City", "FinalDestinationCity")
+                        .WithMany()
+                        .HasForeignKey("FinalDestinationCityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PostalSystem.Api.Models.Postman", null)
                         .WithMany("Packages")
-                        .HasForeignKey("CurrentPostmanId");
+                        .HasForeignKey("PostmanId");
 
-                    b.HasOne("PostalSystem.Api.Models.Warehouse", "CurrentWarehouse")
-                        .WithMany("PackagesCurrent")
-                        .HasForeignKey("CurrentWarehouseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PostalSystem.Api.Models.Warehouse", "FinalDestinationWarehouse")
-                        .WithMany("PackagesDestination")
-                        .HasForeignKey("FinalDestinationWarehouseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PostalSystem.Api.Models.Warehouse", "OriginWarehouse")
-                        .WithMany("PackagesOrigin")
-                        .HasForeignKey("OriginWarehouseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CurrentPostman");
-
-                    b.Navigation("CurrentWarehouse");
-
-                    b.Navigation("FinalDestinationWarehouse");
-
-                    b.Navigation("OriginWarehouse");
+                    b.Navigation("FinalDestinationCity");
                 });
 
             modelBuilder.Entity("PostalSystem.Api.Models.Postman", b =>
@@ -292,8 +263,8 @@ namespace PostalSystem.Api.Migrations
             modelBuilder.Entity("PostalSystem.Api.Models.Warehouse", b =>
                 {
                     b.HasOne("PostalSystem.Api.Models.City", "City")
-                        .WithMany("Warehouses")
-                        .HasForeignKey("CityId")
+                        .WithOne("Warehouse")
+                        .HasForeignKey("PostalSystem.Api.Models.Warehouse", "CityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -302,7 +273,7 @@ namespace PostalSystem.Api.Migrations
 
             modelBuilder.Entity("PostalSystem.Api.Models.City", b =>
                 {
-                    b.Navigation("Warehouses");
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("PostalSystem.Api.Models.EventType", b =>
@@ -325,12 +296,6 @@ namespace PostalSystem.Api.Migrations
             modelBuilder.Entity("PostalSystem.Api.Models.Warehouse", b =>
                 {
                     b.Navigation("Events");
-
-                    b.Navigation("PackagesCurrent");
-
-                    b.Navigation("PackagesDestination");
-
-                    b.Navigation("PackagesOrigin");
 
                     b.Navigation("Postmen");
                 });
