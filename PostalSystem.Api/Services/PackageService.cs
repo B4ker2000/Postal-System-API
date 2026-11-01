@@ -40,14 +40,14 @@ namespace PostalSystem.Api.Services
 
             // 3. Create the "Registered" Event 
             var registeredEventType = await _context.EventTypes
-                .FirstOrDefaultAsync(et => et.Code == "NP1");
+                .FirstOrDefaultAsync(et => et.Code == "PR1");
 
             if (registeredEventType == null)
-                throw new InvalidOperationException("Event type 'NP1' not found in database.");
+                throw new InvalidOperationException("Event type 'PR1' not found in database.");
 
             var registrationEvent = new Event
             {
-                Package = package,
+                PackageId = package.TrackingGuid,
                 EventType = registeredEventType,
                 PostmanId = postmanId,
                 WarehouseId = postman.WarehouseId, // This marks the Origin!
