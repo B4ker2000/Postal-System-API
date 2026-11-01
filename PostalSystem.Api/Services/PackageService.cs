@@ -14,14 +14,14 @@ namespace PostalSystem.Api.Services
             _context = context;
         }
 
-        public async Task<Package> RegisterPackageAsync(int postmanId, RegisterPackageDto dto)
+        public async Task<ServiceResult> RegisterPackageAsync(int postmanId, RegisterPackageDto dto)
         {
             // 1. Validate the postman and get their home warehouse
             var postman = await _context.Postmen
                 .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
 
             if (postman == null)
-                throw new ArgumentException("Active postman not found.");
+                return new ServiceResult(false, "Active postman not found.");
 
             // 2. Create the Package entity
             // Also generate a random tracking GUID and a 6-digit OTP code
@@ -43,7 +43,7 @@ namespace PostalSystem.Api.Services
                 .FirstOrDefaultAsync(et => et.Code == "PR1");
 
             if (registeredEventType == null)
-                throw new InvalidOperationException("Event type 'PR1' not found in database.");
+                return new ServiceResult(false, "Event type 'PR1' not found in database.");
 
             var registrationEvent = new Event
             {
@@ -52,7 +52,7 @@ namespace PostalSystem.Api.Services
                 PostmanId = postmanId,
                 WarehouseId = postman.WarehouseId, // This marks the Origin!
                 Timestamp = DateTime.UtcNow,
-                Details = "Package registered into the system." // take from eventType desc perhaps?
+                Details = await GenerateEventDetailsAsync("PR1", postmanId, postman.WarehouseId)
             };
 
             _context.Events.Add(registrationEvent);
@@ -60,102 +60,140 @@ namespace PostalSystem.Api.Services
             // 4. Save everything in one transaction
             await _context.SaveChangesAsync();
 
-            return package;
+            return new ServiceResult(true, "Package registered successfully!", 
+                   new RegisterPackageResponse(package.TrackingGuid, package.DeliveryOTP));
         }
 
-        public async Task<Package> PickupPackageAsync(int postmanId, Guid trackingGuid)
+        public async Task<ServiceResult> PickupPackageAsync(PickupRequest request)
         {
-            // 1. Find the postman and their warehouse
-            var postman = await _context.Postmen
-                .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
+            var package = await _context.Packages.FindAsync(request.TrackingGuid);
+            var postman = await _context.Postmen.FindAsync(request.PostmanId);
 
-            if (postman == null) throw new ArgumentException("Active postman not found.");
+            if (package == null)
+                return new ServiceResult(false, "Package not found.");
+            if (postman == null || !postman.IsActive) 
+                return new ServiceResult(false, "Active postman not found.");
 
-            // 2. Find the package and its entire event history (sorted by newest first)
-            var package = await _context.Packages
-                .Include(p => p.Events.OrderByDescending(e => e.Timestamp))
-                .FirstOrDefaultAsync(p => p.TrackingGuid == trackingGuid);
-
-            if (package == null) throw new ArgumentException("Package not found.");
-            if (package.IsCanceled) throw new InvalidOperationException("Cannot pick up a canceled package.");
-
-            // 3. Determine current location from the latest event
-            var lastEvent = package.Events.FirstOrDefault();
-            if (lastEvent == null) throw new InvalidOperationException("Package has no history.");
-
-            // Validation: The last event MUST be an 'Entry' (Category 1) and at the postman's warehouse
-             if (lastEvent.EventType.Category != EventCategory.Entry)
-                 throw new InvalidOperationException("Package is not currently in a warehouse.");
-
-            if (lastEvent.WarehouseId != postman.WarehouseId)
-                throw new InvalidOperationException("This package is not at your assigned warehouse!");
-
-            // 4. Create the "Picked Up" Event (the "Exit" stamp)
-            var pickupEventType = await _context.EventTypes
-                .FirstOrDefaultAsync(et => et.Code == "PP2");
-            
-            if (pickupEventType == null)
-                throw new InvalidOperationException("Event type 'PP2' not found.");
-
-            var pickupEvent = new Event
-            {
-                PackageId = package.TrackingGuid,
-                EventType = pickupEventType,
-                PostmanId = postmanId,
-                WarehouseId = postman.WarehouseId,
-                Timestamp = DateTime.UtcNow,
-                Details = $"Picked up by postman {postman.Name}."
-            };
-
-            // 5. Update Package state
-            package.CalculatedStatus = PackageStatus.InTransit;
-            _context.Events.Add(pickupEvent);
-
-            await _context.SaveChangesAsync();
-
-            return package;
-        }
-
-        public async Task<bool> ConfirmDeliveryAsync(ConfirmDeliveryRequest request)
-        {
-            var package = await _context.Packages
-                .FirstOrDefaultAsync(p => p.TrackingGuid == request.TrackingGuid);
-
-            if (package == null || package.IsCanceled)
-                return false;
-
-            if (package.DeliveryOTP != request.Otp)
-                return false;
-
-            // Ensure the package is actually out for delivery
             var lastEvent = await _context.Events
                 .Where(e => e.PackageId == package.TrackingGuid)
                 .OrderByDescending(e => e.Timestamp)
                 .FirstOrDefaultAsync();
 
-            if (lastEvent == null || lastEvent.EventType.Code != "PP2")
-                return false;
+            // Verify the package is at the postman's assigned warehouse
+            if (lastEvent == null || lastEvent?.WarehouseId != postman.WarehouseId) 
+                return new ServiceResult(false, "Package is not at the postman's assigned warehouse.");
 
-            var deliveryEventType = await _context.EventTypes
+            var pickupEventType = await _context.EventTypes.FirstAsync(et => et.Code == "PP2");
+            
+            var pickupEvent = new Event
+            {
+                PackageId = package.TrackingGuid,
+                EventTypeId = pickupEventType.EventTypeId,
+                PostmanId = postman.PostmanId,
+                WarehouseId = postman.WarehouseId,
+                Timestamp = DateTime.UtcNow,
+                Details = await GenerateEventDetailsAsync("PP2", postman.PostmanId, postman.WarehouseId)
+            };
+
+            package.CalculatedStatus = PackageStatus.InTransit; 
+            _context.Events.Add(pickupEvent);
+            await _context.SaveChangesAsync();
+            return new ServiceResult(true, "Package picked up successfully!");
+        }
+
+        public async Task<ServiceResult> TransferPackageAsync(TransferRequest request)
+        {
+            var package = await _context.Packages.FindAsync(request.TrackingGuid);
+            if (package == null || package.CalculatedStatus != PackageStatus.InTransit)
+                return new ServiceResult(false, "Package status doesn't allow transfer to a new warehouse.");
+
+            var warehouse = await _context.Warehouses.FindAsync(request.WarehouseId);
+            if (warehouse == null)
+                return new ServiceResult(false, "Warehouse not found.");
+
+            var warehouseEntryType = await _context.EventTypes.FirstAsync(et => et.Code == "PW1");
+
+            var transferEvent = new Event
+            {
+                PackageId = package.TrackingGuid,
+                EventTypeId = warehouseEntryType.EventTypeId,
+                PostmanId = request.PostmanId,
+                WarehouseId = warehouse.WarehouseId,
+                Timestamp = DateTime.UtcNow,
+                Details = await GenerateEventDetailsAsync("PW1", request.PostmanId, warehouse.WarehouseId)
+            };
+
+            package.CalculatedStatus = PackageStatus.InWarehouse;
+            _context.Events.Add(transferEvent);
+            await _context.SaveChangesAsync();
+            return new ServiceResult(true, "Package transfered successfully.");
+        }
+
+        public async Task<ServiceResult> ConfirmDeliveryAsync(ConfirmDeliveryRequest request)
+        {
+            var package = await _context.Packages.FindAsync(request.TrackingGuid);
+            var postman = await _context.Postmen.FindAsync(request.PostmanId);
+
+            if (package == null) 
+                return new ServiceResult(false, "Package not found.");
+            if (postman == null || !postman.IsActive) 
+                return new ServiceResult(false, "Postman not found.");
+
+            // Verify the secret OTP
+            if (package.DeliveryOTP != request.Otp)
+                return new ServiceResult(false, "Entered OTP code is wrong.");
+
+            var lastEvent = await _context.Events
+                .Where(e => e.PackageId == package.TrackingGuid)
+                .OrderByDescending(e => e.Timestamp)
+                .FirstOrDefaultAsync();
+
+            // Verify the last event was a pickup (PP2)
+            var pickupEventType = await _context.EventTypes
                 .FirstOrDefaultAsync(et => et.Code == "PP2");
+            if (lastEvent == null || lastEvent.EventTypeId != pickupEventType?.EventTypeId)
+                return new ServiceResult(false, "Package isn't picked up yet!");
 
-            if (deliveryEventType == null)
-                throw new Exception("Delivery event type 'PP2' not configured in database.");
+            var deliveryEventType = await _context.EventTypes.FirstAsync(et => et.Code == "PD1");
 
             var deliveryEvent = new Event
             {
                 PackageId = package.TrackingGuid,
                 EventTypeId = deliveryEventType.EventTypeId,
+                PostmanId = postman.PostmanId,
+                WarehouseId = lastEvent?.WarehouseId,
                 Timestamp = DateTime.UtcNow,
-                Details = "Package delivered successfully."
+                Details = await GenerateEventDetailsAsync("PD1", postman.PostmanId, lastEvent?.WarehouseId)
             };
 
             package.CalculatedStatus = PackageStatus.Delivered;
-
             _context.Events.Add(deliveryEvent);
             await _context.SaveChangesAsync();
+            return new ServiceResult(true, "Package successfully delivered.");
+        }
 
-            return true;
+        private async Task<string> GenerateEventDetailsAsync(string eventCode, int? postmanId, int? warehouseId)
+        {
+            var postman = postmanId.HasValue
+                ? await _context.Postmen.FindAsync(postmanId.Value)
+                : null;
+
+            var warehouse = warehouseId.HasValue
+                ? await _context.Warehouses.FindAsync(warehouseId.Value)
+                : null;
+
+            string pName = postman?.Name ?? "Unknown Postman";
+            string wName = warehouse?.WarehouseName ?? "Unknown Warehouse";
+
+            return eventCode switch
+            {
+                "PR1" => $"Package registered by {pName} at {wName}.",
+                "PP2" => $"Picked up by postman {pName} from {wName}.",
+                "PW1" => $"Stored at {wName} by postman {pName}.",
+                "PD1" => $"Delivered by postman {pName} (Last stop: {wName}).",
+                "PC2" => $"Package canceled by {pName}.",
+                _     => "Event logged in system."
+            };
         }
     }
 }

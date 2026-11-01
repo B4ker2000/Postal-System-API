@@ -18,54 +18,33 @@ namespace PostalSystem.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterPackageRequest request)
         {
-            // separate the concerns of the request and the service call later
-            try
-            {
-                var package = await _packageService.RegisterPackageAsync(request.PostmanId, request.PackageDto);
-                return Ok(new { TrackingNumber = package.TrackingGuid, Message = "Package registered successfully!" });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            var result = await _packageService.RegisterPackageAsync(request.PostmanId, request.PackageDto);
+            return result.IsSuccess ? Ok(result.Data) 
+                   : BadRequest(result.Message);
         }
 
         [HttpPost("pickup")]
         public async Task<IActionResult> Pickup([FromBody] PickupRequest request)
         {
-            // SOC needed!
-            try
-            {
-                var package = await _packageService.PickupPackageAsync(request.PostmanId, request.TrackingGuid);
-                return Ok(new { Message = "Package picked up successfully!", Status = package.CalculatedStatus.ToString() });
-            }
-            catch (ArgumentException ex)
-            {
-               return BadRequest(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(ex.Message); 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            var result = await _packageService.PickupPackageAsync(request);
+            return result.IsSuccess ? Ok(result.Message) 
+                   : BadRequest(result.Message);
+        }
+
+        [HttpPost("transfer")]
+        public async Task<IActionResult> Transfer([FromBody] TransferRequest request)
+        {
+            var result = await _packageService.TransferPackageAsync(request);
+            return result.IsSuccess ? Ok(result.Message) 
+                   : BadRequest(result.Message);
         }
 
         [HttpPost("confirm-delivery")]
         public async Task<IActionResult> ConfirmDelivery([FromBody] ConfirmDeliveryRequest request)
         {
             var result = await _packageService.ConfirmDeliveryAsync(request);
-            if (!result)
-            {
-                return BadRequest("Invalid tracking GUID, OTP, or package is not in a deliverable state.");
-            }
-            return Ok("Package delivered successfully! Quack!");
+            return result.IsSuccess ? Ok(result.Message) 
+                   : BadRequest(result.Message);
         }
     }
 }

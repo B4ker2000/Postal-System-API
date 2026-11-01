@@ -13,8 +13,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IPackageService, PackageService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    builder.Services.AddDbContext<PostalSystemDbContext>(options =>
-        options.UseSqlServer(connectionString));
+
+builder.Services.AddDbContext<PostalSystemDbContext>(options =>
+        options.UseSqlServer(connectionString)
+               .EnableSensitiveDataLogging());
+
 		
 var app = builder.Build();
 

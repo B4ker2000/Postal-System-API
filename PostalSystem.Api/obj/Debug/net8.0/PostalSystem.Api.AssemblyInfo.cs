@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PostalSystem.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3212ac09be62504da5fdc4567115fc9b58af6d16")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+03172b916f13707523f6990be9f48f266dd272b5")]
 [assembly: System.Reflection.AssemblyProductAttribute("PostalSystem.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PostalSystem.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
