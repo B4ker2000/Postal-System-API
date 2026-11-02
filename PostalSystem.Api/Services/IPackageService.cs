@@ -9,5 +9,6 @@ namespace PostalSystem.Api.Services
         Task<ServiceResult> PickupPackageAsync(PickupRequest request);
         Task<ServiceResult> TransferPackageAsync(TransferRequest request);
         Task<ServiceResult> ConfirmDeliveryAsync(ConfirmDeliveryRequest request);
+        Task<ServiceResult> CancelPackageAsync(CancelPackageRequest request);
     }
 }

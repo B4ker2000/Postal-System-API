@@ -1,6 +1,7 @@
 using PostalSystem.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using PostalSystem.Api.Services;
+using PostalSystem.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services.AddDbContext<PostalSystemDbContext>(options =>
 
 		
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

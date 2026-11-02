@@ -46,5 +46,13 @@ namespace PostalSystem.Api.Controllers
             return result.IsSuccess ? Ok(result.Message) 
                    : BadRequest(result.Message);
         }
+
+        [HttpPost("cancel")]
+        public async Task<IActionResult> Cancel([FromBody] CancelPackageRequest request)
+        {
+            var result = await _packageService.CancelPackageAsync(request);
+            return result.IsSuccess ? Ok(result.Message) 
+                   : BadRequest(result.Message);
+        }
     }
 }

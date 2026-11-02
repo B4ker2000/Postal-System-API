@@ -1,3 +1,4 @@
+using Azure;
 using Microsoft.EntityFrameworkCore;
 using PostalSystem.Api.Data;
 using PostalSystem.Api.Dtos;
@@ -170,6 +171,48 @@ namespace PostalSystem.Api.Services
             _context.Events.Add(deliveryEvent);
             await _context.SaveChangesAsync();
             return new ServiceResult(true, "Package successfully delivered.");
+        }
+
+        public async Task<ServiceResult> CancelPackageAsync(CancelPackageRequest request)
+        {
+            var package = await _context.Packages.FindAsync(request.TrackingGuid);
+            var postman = await _context.Postmen.FindAsync(request.PostmanId);
+
+            if (package == null)
+                return new ServiceResult(false, "Package not found.");
+            if (postman == null || !postman.IsActive)
+                return new ServiceResult(false, "Active postman not found.");
+            if (package.IsCanceled)
+                return new ServiceResult(false, "Package is already canceled.");
+            if (package.CalculatedStatus == PackageStatus.Delivered)
+                return new ServiceResult(false, "Cannot cancel a package that has already been delivered.");
+
+            // 1. Mark as canceled
+            package.IsCanceled = true;
+
+            // 2. Log the "PC2" Event
+            var cancelEventType = await _context.EventTypes.FirstAsync(et => et.Code == "PC2");
+
+            // 3. Find the last WarehouseId through lastEvent
+            var lastEvent = await _context.Events
+                .Where(e => e.PackageId == package.TrackingGuid)
+                .OrderByDescending(e => e.Timestamp)
+                .FirstOrDefaultAsync();
+
+            var cancelEvent = new Event
+            {
+                PackageId = package.TrackingGuid,
+                EventTypeId = cancelEventType.EventTypeId,
+                PostmanId = postman.PostmanId,
+                WarehouseId = lastEvent?.WarehouseId,
+                Timestamp = DateTime.UtcNow,
+                Details = await GenerateEventDetailsAsync("PC2", postman.PostmanId, lastEvent?.WarehouseId)
+            };
+
+            _context.Events.Add(cancelEvent);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResult(true, "Package successfully canceled.");
         }
 
         private async Task<string> GenerateEventDetailsAsync(string eventCode, int? postmanId, int? warehouseId)
