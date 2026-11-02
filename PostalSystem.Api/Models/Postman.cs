@@ -4,8 +4,8 @@ namespace PostalSystem.Api.Models
     {
         public int PostmanId { get; set; }
         public int WarehouseId { get; set; }
-        public string? Name { get; set; }
-        public string? Phone { get; set; }
+        public string Name { get; set; } = null!;
+        public string Phone { get; set; } = null!;
         public bool IsActive { get; set; } = true;
         
         public Warehouse? Warehouse { get; set; }

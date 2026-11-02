@@ -5,5 +5,6 @@ namespace PostalSystem.Api.Dtos
         public int FinalDestinationCityId { get; set; }
         public string DestinationAddress { get; set; } = string.Empty;
         public bool IsFlaggedAsFragile { get; set; }
+        public int PostmanId { get; set; } // temp so validators would work properly!
     }
 }

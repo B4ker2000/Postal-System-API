@@ -146,3 +146,6 @@ C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\obj\Debug\net8.0\
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\obj\Debug\net8.0\PostalSystem.Api.pdb
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\obj\Debug\net8.0\PostalSystem.Api.genruntimeconfig.cache
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\obj\Debug\net8.0\ref\PostalSystem.Api.dll
+C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\FluentValidation.dll
+C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\FluentValidation.AspNetCore.dll
+C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
