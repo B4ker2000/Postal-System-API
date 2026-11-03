@@ -9,6 +9,8 @@ namespace PostalSystem.Api.Data.Configurations
         public void Configure(EntityTypeBuilder<Package> builder)
         {
             builder.HasKey(p => p.TrackingGuid);
+            builder.Property(p => p.TrackingGuid)
+                   .HasDefaultValueSql("newid()"); //NEWSEQUENTIALID تحقیق کن!
 
             builder.HasOne(p => p.FinalDestinationCity)
                    .WithMany()
