@@ -44,7 +44,7 @@ namespace PostalSystem.Api.Migrations
                 name: "Packages",
                 columns: table => new
                 {
-                    TrackingGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TrackingGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
                     DeliveryOTP = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FinalDestinationCityId = table.Column<int>(type: "int", nullable: false),
                     DestinationAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -70,7 +70,8 @@ namespace PostalSystem.Api.Migrations
                     WarehouseId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     WarehouseName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CityId = table.Column<int>(type: "int", nullable: false)
+                    CityId = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,8 +91,8 @@ namespace PostalSystem.Api.Migrations
                     PostmanId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     WarehouseId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -113,8 +114,8 @@ namespace PostalSystem.Api.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PackageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EventTypeId = table.Column<int>(type: "int", nullable: false),
-                    PostmanId = table.Column<int>(type: "int", nullable: true),
-                    WarehouseId = table.Column<int>(type: "int", nullable: true),
+                    PostmanId = table.Column<int>(type: "int", nullable: false),
+                    WarehouseId = table.Column<int>(type: "int", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -132,17 +133,19 @@ namespace PostalSystem.Api.Migrations
                         column: x => x.PackageId,
                         principalTable: "Packages",
                         principalColumn: "TrackingGuid",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Events_Postmen_PostmanId",
                         column: x => x.PostmanId,
                         principalTable: "Postmen",
-                        principalColumn: "PostmanId");
+                        principalColumn: "PostmanId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Events_Warehouses_WarehouseId",
                         column: x => x.WarehouseId,
                         principalTable: "Warehouses",
-                        principalColumn: "WarehouseId");
+                        principalColumn: "WarehouseId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -180,8 +183,7 @@ namespace PostalSystem.Api.Migrations
                 name: "IX_Postmen_Phone",
                 table: "Postmen",
                 column: "Phone",
-                unique: true,
-                filter: "[Phone] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Postmen_WarehouseId",

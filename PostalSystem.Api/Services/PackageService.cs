@@ -28,6 +28,12 @@ namespace PostalSystem.Api.Services
                 return new ServiceResult(false, "Active postman not found.");
             }
 
+            if (!postman.Warehouse.IsActive)
+            {
+                _logger.LogWarning("Registration failed: Warehouse {WarehouseName} is currently under maintanance or is decommissioned.", postman.Warehouse.WarehouseName);
+                return new ServiceResult(false, "The assigned warehouse is currently inactive.");
+            }
+
             // 2. Create the Package entity
             // Also generate a random a 6-digit OTP code
             // TrackingGuid is now handled by SQL Server via newid()
@@ -81,6 +87,12 @@ namespace PostalSystem.Api.Services
             {
                 _logger.LogWarning("Pickup failed: Active postman {PostmanId} not found.", request.PostmanId);
                 return new ServiceResult(false, "Active postman not found.");
+            }
+
+            if (!postman.Warehouse.IsActive)
+            {
+                _logger.LogWarning("Pickup failed: Warehouse {WarehouseName} is currently under maintanance or is decommissioned.", postman.Warehouse.WarehouseName);
+                return new ServiceResult(false, "The assigned warehouse is currently inactive.");
             }
 
             if (package == null)
@@ -250,7 +262,7 @@ namespace PostalSystem.Api.Services
 
             if (lastEvent.Warehouse == null || package.FinalDestinationCityId != lastEvent.Warehouse.CityId)
             {
-                _logger.LogWarning("Package Delivery failed: Postman is in the wrong city for package {Guid}.", request.TrackingGuid);
+                _logger.LogWarning("Package Delivery failed: Postman is not authorized to deliver {Guid} in cities they are not assigned to.", request.TrackingGuid);
                 return new ServiceResult(false, "Postman does not have the privileges to deliver packages in a different city.");
             }
 

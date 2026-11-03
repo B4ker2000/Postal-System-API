@@ -56,13 +56,13 @@ namespace PostalSystem.Api.Migrations
                     b.Property<Guid>("PackageId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("PostmanId")
+                    b.Property<int>("PostmanId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("WarehouseId")
+                    b.Property<int>("WarehouseId")
                         .HasColumnType("int");
 
                     b.HasKey("EventId");
@@ -112,7 +112,8 @@ namespace PostalSystem.Api.Migrations
                 {
                     b.Property<Guid>("TrackingGuid")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("newid()");
 
                     b.Property<int>("CalculatedStatus")
                         .HasColumnType("int");
@@ -153,9 +154,11 @@ namespace PostalSystem.Api.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("WarehouseId")
@@ -164,8 +167,7 @@ namespace PostalSystem.Api.Migrations
                     b.HasKey("PostmanId");
 
                     b.HasIndex("Phone")
-                        .IsUnique()
-                        .HasFilter("[Phone] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("WarehouseId");
 
@@ -182,6 +184,9 @@ namespace PostalSystem.Api.Migrations
 
                     b.Property<int>("CityId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("WarehouseName")
                         .IsRequired()
@@ -206,16 +211,20 @@ namespace PostalSystem.Api.Migrations
                     b.HasOne("PostalSystem.Api.Models.Package", "Package")
                         .WithMany("Events")
                         .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("PostalSystem.Api.Models.Postman", "Postman")
                         .WithMany("Events")
-                        .HasForeignKey("PostmanId");
+                        .HasForeignKey("PostmanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("PostalSystem.Api.Models.Warehouse", "Warehouse")
                         .WithMany("Events")
-                        .HasForeignKey("WarehouseId");
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("EventType");
 

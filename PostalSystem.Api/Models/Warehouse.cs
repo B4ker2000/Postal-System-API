@@ -5,6 +5,7 @@ namespace PostalSystem.Api.Models
         public int WarehouseId { get; set; }
         public string WarehouseName { get; set; } = string.Empty;
         public int CityId { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public City City { get; set; } = null!;
         public ICollection<Postman> Postmen { get; set; } = new List<Postman>();
