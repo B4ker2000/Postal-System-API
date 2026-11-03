@@ -10,7 +10,7 @@ namespace PostalSystem.Api.Data.Configurations
         {
             builder.HasKey(p => p.TrackingGuid);
             builder.Property(p => p.TrackingGuid)
-                   .HasDefaultValueSql("newid()"); //NEWSEQUENTIALID تحقیق کن!
+                   .HasDefaultValueSql("NEWSEQUENTIALID()"); //newid()
 
             builder.HasOne(p => p.FinalDestinationCity)
                    .WithMany()

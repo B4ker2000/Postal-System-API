@@ -1,4 +1,7 @@
 namespace PostalSystem.Api.Dtos
 {
-    public record CancelPackageRequest(Guid TrackingGuid, int PostmanId);
+    public record CancelPackageRequest(
+        Guid TrackingGuid, 
+        int PostmanId
+    );
 }
