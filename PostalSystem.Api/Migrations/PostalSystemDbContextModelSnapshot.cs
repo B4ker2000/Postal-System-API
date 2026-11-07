@@ -113,7 +113,7 @@ namespace PostalSystem.Api.Migrations
                     b.Property<Guid>("TrackingGuid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newid()");
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
 
                     b.Property<int>("CalculatedStatus")
                         .HasColumnType("int");

@@ -8,6 +8,9 @@ C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\PostalSystem.Api.pdb
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\Azure.Core.dll
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\Azure.Identity.dll
+C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\FluentValidation.dll
+C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\FluentValidation.AspNetCore.dll
+C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\Humanizer.dll
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
@@ -146,6 +149,3 @@ C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\obj\Debug\net8.0\
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\obj\Debug\net8.0\PostalSystem.Api.pdb
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\obj\Debug\net8.0\PostalSystem.Api.genruntimeconfig.cache
 C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\obj\Debug\net8.0\ref\PostalSystem.Api.dll
-C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\FluentValidation.dll
-C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\FluentValidation.AspNetCore.dll
-C:\Users\a.ahmadali\Desktop\Postal-System-API\PostalSystem.Api\bin\Debug\net8.0\FluentValidation.DependencyInjectionExtensions.dll

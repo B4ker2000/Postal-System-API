@@ -19,13 +19,14 @@ namespace PostalSystem.Api.Services
         public async Task<ServiceResult> RegisterPackageAsync(int postmanId, RegisterPackageDto dto)
         {
             var postman = await _context.Postmen
+                .Include(p => p.Warehouse)
                 .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
 
-            // Validate the postman and get their home warehouse
+            // Validate the postman and check their home warehouse
             if (postman == null || !postman.IsActive || postman.Warehouse == null)
             {
-                _logger.LogWarning("Registration failed: Active postman {PostmanId} not found.", postmanId);
-                return new ServiceResult(false, "Active postman not found.");
+                _logger.LogWarning("Registration failed: Active postman {PostmanId} not found or is not active.", postmanId);
+                return new ServiceResult(false, "Active postman not found or is not active.");
             }
 
             if (!postman.Warehouse.IsActive)
@@ -61,6 +62,7 @@ namespace PostalSystem.Api.Services
 
             var registrationEvent = new Event
             {
+                Package = package,
                 EventType = registeredEventType,
                 PostmanId = postmanId,
                 WarehouseId = postman.WarehouseId, // This marks the Origin!
@@ -80,13 +82,16 @@ namespace PostalSystem.Api.Services
 
         public async Task<ServiceResult> PickupPackageAsync(PickupRequest request)
         {
-            var postman = await _context.Postmen.FindAsync(request.PostmanId);
+            var postman = await _context.Postmen
+                .Include(p => p.Warehouse)
+                .FirstOrDefaultAsync(p => p.PostmanId == request.PostmanId && p.IsActive);
+                
             var package = await _context.Packages.FindAsync(request.TrackingGuid);
 
             if (postman == null || !postman.IsActive || postman.Warehouse == null)
             {
-                _logger.LogWarning("Pickup failed: Active postman {PostmanId} not found.", request.PostmanId);
-                return new ServiceResult(false, "Active postman not found.");
+                _logger.LogWarning("Pickup failed: Active postman {PostmanId} not found or is not active.", request.PostmanId);
+                return new ServiceResult(false, "Active postman not found or is not active.");
             }
 
             if (!postman.Warehouse.IsActive)
@@ -148,7 +153,10 @@ namespace PostalSystem.Api.Services
 
         public async Task<ServiceResult> TransferPackageAsync(TransferRequest request)
         {
-            var postman = await _context.Postmen.FindAsync(request.PostmanId);
+            var postman = await _context.Postmen
+                .Include(p => p.Warehouse)
+                .FirstOrDefaultAsync(p => p.PostmanId == request.PostmanId && p.IsActive);
+            
             var package = await _context.Packages.FindAsync(request.TrackingGuid);
             
             if (postman == null || !postman.IsActive || postman.Warehouse == null)
@@ -169,10 +177,10 @@ namespace PostalSystem.Api.Services
                 return new ServiceResult(false, "Package status doesn't allow transfer to a new warehouse.");
             }
 
-            var warehouse = await _context.Warehouses.FindAsync(request.WarehouseId);
-            if (warehouse == null)
+            var warehouse = await _context.Warehouses.FindAsync(postman.WarehouseId);
+            if (warehouse == null || !warehouse.IsActive)
             {
-                _logger.LogWarning("Transfer failed: Destination warehouse {WarehouseId} not found.", request.WarehouseId);
+                _logger.LogWarning("Transfer failed: Destination warehouse {WarehouseId} not found.", postman.WarehouseId);
                 return new ServiceResult(false, "Warehouse not found.");
             }
 
@@ -194,11 +202,17 @@ namespace PostalSystem.Api.Services
                 return new ServiceResult(false, "Package is already delivered.");
             }
 
+            if (lastEvent.Warehouse.CityId == package.FinalDestinationCityId)
+            {
+                _logger.LogWarning("Package Transfer failed: Package {Guid} was already in the final destination city! You cannot transfer it to another warehouse in a different city.", request.TrackingGuid);
+                return new ServiceResult(false, "Package may not leave destination city once it arrives there.");
+            }
+
             var warehouseEntryType = await _context.EventTypes.FirstAsync(et => et.Code == EventTypeCode.InWarehouse);
 
             var transferEvent = new Event
             {
-                PackageId = package.TrackingGuid, // this stays right?
+                PackageId = package.TrackingGuid,
                 EventTypeId = warehouseEntryType.EventTypeId,
                 PostmanId = request.PostmanId,
                 WarehouseId = warehouse.WarehouseId,
@@ -216,7 +230,10 @@ namespace PostalSystem.Api.Services
 
         public async Task<ServiceResult> ConfirmDeliveryAsync(ConfirmDeliveryRequest request)
         {
-            var postman = await _context.Postmen.FindAsync(request.PostmanId);
+            var postman = await _context.Postmen
+                .Include(p => p.Warehouse)
+                .FirstOrDefaultAsync(p => p.PostmanId == request.PostmanId && p.IsActive);
+
             var package = await _context.Packages.FindAsync(request.TrackingGuid);
             
             if (postman == null || !postman.IsActive || postman.Warehouse == null)
@@ -295,7 +312,10 @@ namespace PostalSystem.Api.Services
 
         public async Task<ServiceResult> CancelPackageAsync(CancelPackageRequest request)
         {
-            var postman = await _context.Postmen.FindAsync(request.PostmanId);
+            var postman = await _context.Postmen
+                .Include(p => p.Warehouse)
+                .FirstOrDefaultAsync(p => p.PostmanId == request.PostmanId && p.IsActive);
+
             var package = await _context.Packages.FindAsync(request.TrackingGuid);
 
             if (postman == null || !postman.IsActive || postman.Warehouse == null)

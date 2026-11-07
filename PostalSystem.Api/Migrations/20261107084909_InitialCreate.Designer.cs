@@ -12,7 +12,7 @@ using PostalSystem.Api.Data;
 namespace PostalSystem.Api.Migrations
 {
     [DbContext(typeof(PostalSystemDbContext))]
-    [Migration("20261103103013_InitialCreate")]
+    [Migration("20261107084909_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -116,7 +116,7 @@ namespace PostalSystem.Api.Migrations
                     b.Property<Guid>("TrackingGuid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newid()");
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
 
                     b.Property<int>("CalculatedStatus")
                         .HasColumnType("int");

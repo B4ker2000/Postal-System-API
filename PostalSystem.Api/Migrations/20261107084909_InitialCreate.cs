@@ -44,7 +44,7 @@ namespace PostalSystem.Api.Migrations
                 name: "Packages",
                 columns: table => new
                 {
-                    TrackingGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
+                    TrackingGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
                     DeliveryOTP = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FinalDestinationCityId = table.Column<int>(type: "int", nullable: false),
                     DestinationAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
