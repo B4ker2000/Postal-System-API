@@ -186,23 +186,24 @@ namespace PostalSystem.Api.Services
 
             var lastEvent = await _context.Events
                 .Include(e => e.EventType)
+                .Include(e => e.Warehouse)
                 .Where(e => e.PackageId == package.TrackingGuid)
                 .OrderByDescending(e => e.Timestamp)
                 .FirstOrDefaultAsync();
-            
-            if (lastEvent == null || lastEvent.EventType.Code != EventTypeCode.PickedUp)
-            {
-                _logger.LogWarning("Transfer failed: Package {Guid} last event was not 'Picked Up'.", request.TrackingGuid);
-                return new ServiceResult(false, $"Last package status is not '{EventTypeCode.PickedUp}'.");
-            }
 
-            if (lastEvent.EventType.Code == EventTypeCode.Delivered)
+            if (lastEvent?.EventType.Code == EventTypeCode.Delivered)
             {
                 _logger.LogWarning("Package Transfer failed: Package {Guid} was already delivered.", request.TrackingGuid);
                 return new ServiceResult(false, "Package is already delivered.");
             }
+            
+            if (lastEvent == null || lastEvent.EventType.Code != EventTypeCode.PickedUp)
+            {
+                _logger.LogWarning("Transfer failed: Package {Guid}'s last event was not 'Picked Up'.", request.TrackingGuid);
+                return new ServiceResult(false, $"Last package status is not '{EventTypeCode.PickedUp}'.");
+            }
 
-            if (lastEvent.Warehouse.CityId == package.FinalDestinationCityId)
+            if (lastEvent.Warehouse.CityId == package.FinalDestinationCityId && postman.Warehouse.CityId != package.FinalDestinationCityId)
             {
                 _logger.LogWarning("Package Transfer failed: Package {Guid} was already in the final destination city! You cannot transfer it to another warehouse in a different city.", request.TrackingGuid);
                 return new ServiceResult(false, "Package may not leave destination city once it arrives there.");
