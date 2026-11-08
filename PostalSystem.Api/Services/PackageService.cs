@@ -391,6 +391,34 @@ namespace PostalSystem.Api.Services
             return new ServiceResult(true, "Package successfully canceled.");
         }
 
+        public async Task<ServiceResult<List<EventTrackingDto>>> GetPackageHistoryAsync(Guid trackingGuid)
+        {
+            var package = await _context.Packages.FindAsync(trackingGuid);
+            if (package == null)
+            {
+                return new ServiceResult<List<EventTrackingDto>>(false, "Package not found.");
+            }
+
+            var events = await _context.Events
+                .Include(e => e.EventType)
+                .Include(e => e.Postman)
+                .Include(e => e.Warehouse)
+                .Where(e => e.PackageId == trackingGuid)
+                .OrderBy(e => e.Timestamp)
+                .Select(e => new EventTrackingDto(
+                    e.EventId,
+                    e.EventTypeId,
+                    e.EventType.EventTypeName,
+                    e.Postman != null ? e.Postman.Name : "N/A",
+                    e.Warehouse != null ? e.Warehouse.WarehouseName : "N/A",
+                    e.Timestamp,
+                    e.Details!
+                ))
+                .ToListAsync();
+
+            return new ServiceResult<List<EventTrackingDto>>(true, "History retrieved successfully!", events);
+        }
+
         private string GenerateEventDetailsAsync(string eventCode, string pName, string wName)
         {
             return eventCode switch

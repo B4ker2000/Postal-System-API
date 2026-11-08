@@ -10,5 +10,6 @@ namespace PostalSystem.Api.Services
         Task<ServiceResult> TransferPackageAsync(TransferRequest request);
         Task<ServiceResult> ConfirmDeliveryAsync(ConfirmDeliveryRequest request);
         Task<ServiceResult> CancelPackageAsync(CancelPackageRequest request);
+        Task<ServiceResult<List<EventTrackingDto>>> GetPackageHistoryAsync(Guid trackingGuid);
     }
 }

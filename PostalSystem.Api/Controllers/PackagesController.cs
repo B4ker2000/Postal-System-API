@@ -19,8 +19,18 @@ namespace PostalSystem.Api.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterPackageDto request)
         {
             var result = await _packageService.RegisterPackageAsync(request);
-            return result.IsSuccess ? Ok(result.Data) 
-                   : BadRequest(result.Message);
+            if (!result.IsSuccess) 
+                return BadRequest(result.Message);
+            
+            var responseData = (RegisterPackageResponse)result.Data!; 
+            // `!` at the end above, tells the compiler to NOT worry about the possibility of it being null 
+            // since we already checked above it!
+            // This below is a fancier way of doing the same thing as above but avoiding the bang operator(`!`):
+            // var responseData = result.Data as RegisterPackageResponse;
+            // if (result.Data == null)
+            //     return StatusCode(500, "Internal server error: Registration data was missing.");
+            
+            return CreatedAtAction(nameof(GetHistory), new { trackingGuid = responseData.TrackingGuid }, result.Data);
         }
 
         [HttpPost("pickup")]
@@ -53,6 +63,17 @@ namespace PostalSystem.Api.Controllers
             var result = await _packageService.CancelPackageAsync(request);
             return result.IsSuccess ? Ok(result.Message) 
                    : BadRequest(result.Message);
+        }
+
+        [HttpGet("{trackingGuid}/history")]
+        public async Task<IActionResult> GetHistory(Guid trackingGuid)
+        {
+            var result = await _packageService.GetPackageHistoryAsync(trackingGuid);
+
+            if (!result.IsSuccess)
+                return NotFound(result);
+
+            return Ok(result.Data);
         }
     }
 }
