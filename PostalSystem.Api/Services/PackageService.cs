@@ -22,6 +22,10 @@ namespace PostalSystem.Api.Services
             var postman = await _context.Postmen
                 .Include(p => p.Warehouse)
                 .FirstOrDefaultAsync(p => p.PostmanId == dto.PostmanId && p.IsActive);
+            
+            var destinationCity = await _context.Cities
+                .Include(c => c.Warehouse)
+                .FirstOrDefaultAsync(c => c.CityId == dto.FinalDestinationCityId);
 
             // Validate the postman and check their home warehouse
             if (postman == null || !postman.IsActive || postman.Warehouse == null)
@@ -34,6 +38,18 @@ namespace PostalSystem.Api.Services
             {
                 _logger.LogWarning("Registration failed: Warehouse {WarehouseName} is currently under maintanance or is decommissioned.", postman.Warehouse.WarehouseName);
                 return new ServiceResult(false, "The assigned warehouse is currently inactive.");
+            }
+
+            if (destinationCity == null)
+            {
+                _logger.LogWarning("Registration failed: The selected city is currently not yet supported.");
+                return new ServiceResult(false, "The destination city is currently not yet supported.");
+            }
+
+            if (destinationCity.Warehouse == null || !destinationCity.Warehouse.IsActive)
+            {
+                _logger.LogWarning("Registration failed: The destination city does not have a warehouse yet, under maintanance, or is decommissioned");
+                return new ServiceResult(false, "The destination city does not have a warehouse yet or is currently inactive.");
             }
 
             // 2. Create the Package entity
@@ -423,12 +439,21 @@ namespace PostalSystem.Api.Services
         {
             return eventCode switch
             {
-                EventTypeCode.Registered  => $"Package registered by {pName} at {wName}.",
-                EventTypeCode.PickedUp    => $"Picked up by postman {pName} from {wName}.",
-                EventTypeCode.InWarehouse => $"Stored at {wName} by postman {pName}.",
-                EventTypeCode.Delivered   => $"Delivered by postman {pName} (Last stop: {wName}).",
-                EventTypeCode.Canceled    => $"Package canceled by {pName}.",
-                _                         => "Event logged in system."
+                // Persian:
+                EventTypeCode.Registered  => $"بسته توسط «{pName}» در «{wName}» ثبت شد.",
+                EventTypeCode.PickedUp    => $"بسته توسط «{pName}» از «{wName}» برداشته شد.",
+                EventTypeCode.InWarehouse => $"بسته به «{wName}» توسط «{pName}» رسید.",
+                EventTypeCode.Delivered   => $"بسته توسط «{pName}» به دست مشتری رسید (آخرین شعبه: «{wName}»).",
+                EventTypeCode.Canceled    => $"بسته توسط «{pName}» لغو گردید.",
+                _                         => "رویداد در سیستم ثبت گردید"
+
+                // English (Might add language options later, that's why these are kept!):
+                // EventTypeCode.Registered  => $"Package registered by {pName} at {wName}.",
+                // EventTypeCode.PickedUp    => $"Picked up by postman {pName} from {wName}.",
+                // EventTypeCode.InWarehouse => $"Stored at {wName} by postman {pName}.",
+                // EventTypeCode.Delivered   => $"Delivered by postman {pName} (Last stop: {wName}).",
+                // EventTypeCode.Canceled    => $"Package canceled by {pName}.",
+                // _                         => "Event logged in system."
             };
         }
     }
