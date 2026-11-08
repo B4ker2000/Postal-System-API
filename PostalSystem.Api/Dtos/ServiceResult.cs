@@ -1,5 +1,6 @@
 namespace PostalSystem.Api.Dtos
 {
+    // The new Generic version for the event tracking list:
     public class ServiceResult<T>
     {
         public bool IsSuccess { get; set; }
