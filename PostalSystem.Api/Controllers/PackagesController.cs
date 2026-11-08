@@ -16,9 +16,9 @@ namespace PostalSystem.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterPackageRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterPackageDto request)
         {
-            var result = await _packageService.RegisterPackageAsync(request.PostmanId, request.PackageDto);
+            var result = await _packageService.RegisterPackageAsync(request);
             return result.IsSuccess ? Ok(result.Data) 
                    : BadRequest(result.Message);
         }

@@ -1,3 +1,4 @@
+using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 using PostalSystem.Api.Data;
 using PostalSystem.Api.Dtos;
@@ -16,16 +17,16 @@ namespace PostalSystem.Api.Services
             _logger = logger;
         }
 
-        public async Task<ServiceResult> RegisterPackageAsync(int postmanId, RegisterPackageDto dto)
+        public async Task<ServiceResult> RegisterPackageAsync(RegisterPackageDto dto)
         {
             var postman = await _context.Postmen
                 .Include(p => p.Warehouse)
-                .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
+                .FirstOrDefaultAsync(p => p.PostmanId == dto.PostmanId && p.IsActive);
 
             // Validate the postman and check their home warehouse
             if (postman == null || !postman.IsActive || postman.Warehouse == null)
             {
-                _logger.LogWarning("Registration failed: Active postman {PostmanId} not found or is not active.", postmanId);
+                _logger.LogWarning("Registration failed: Active postman {PostmanId} not found or is not active.", dto.PostmanId);
                 return new ServiceResult(false, "Active postman not found or is not active.");
             }
 
@@ -64,7 +65,7 @@ namespace PostalSystem.Api.Services
             {
                 Package = package,
                 EventType = registeredEventType,
-                PostmanId = postmanId,
+                PostmanId = dto.PostmanId,
                 WarehouseId = postman.WarehouseId, // This marks the Origin!
                 Timestamp = DateTime.UtcNow,
                 Details = GenerateEventDetailsAsync(EventTypeCode.Registered, postman.Name, postman.Warehouse.WarehouseName)
@@ -75,7 +76,7 @@ namespace PostalSystem.Api.Services
             // 4. Save everything in one transaction
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Package {Guid} successfully registered by postman {PostmanId}.", package.TrackingGuid, postmanId);
+            _logger.LogInformation("Package {Guid} successfully registered by postman {PostmanId}.", package.TrackingGuid, dto.PostmanId);
             return new ServiceResult(true, "Package registered successfully!",
                    new RegisterPackageResponse(package.TrackingGuid, package.DeliveryOTP));
         }
