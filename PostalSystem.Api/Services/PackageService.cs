@@ -149,12 +149,34 @@ namespace PostalSystem.Api.Services
                 return new ServiceResult(false, "Package is not in a state that allows for pickup.");
             }
 
+            // Ensure the package was not previously picked up!
+            if (lastEvent.EventType.Code == EventTypeCode.PickedUp)
+            {
+                _logger.LogWarning("Pickup failed: Package {Guid} has already been picked up.", request.TrackingGuid);
+                return new ServiceResult(false, "Package has already been picked up.");
+            }
+
+            // Make sure the package was previously registered and it is inside a warehouse (not picked up yet)
+            if (lastEvent.EventType.Code != EventTypeCode.Registered && lastEvent.EventType.Code != EventTypeCode.InWarehouse)
+            {
+                _logger.LogWarning("Pickup failed: Package {Guid} is in an invalid state for pickup (Last Event: {Code}).", request.TrackingGuid, lastEvent.EventType.Code);
+                return new ServiceResult(false, "Package is not in a state that allows for pickup.");
+            }
+
             // Make sure the package wasn't delivered previously
             if (lastEvent.EventType.Code == EventTypeCode.Delivered)
             {
                 _logger.LogWarning("Pickup failed: Package {Guid} was already delivered.", request.TrackingGuid);
                 return new ServiceResult(false, "Package is already delivered.");
             }
+
+            // To make the details message a little more dynamic whether it is mearly in transit or is out for delivery we'll 
+            // generate the message before hand, check in what state the package is, and then add the extra details afterwards!
+            string details = GenerateEventDetailsAsync(EventTypeCode.PickedUp, postman.Name, postman.Warehouse.WarehouseName);
+
+            if (postman.Warehouse.CityId == package.FinalDestinationCityId)
+                details += " این بسته به شهر مقصد رسیده و به زودی تحویل داده خواهد شد.";
+                // details += " It has arrived in the destination city and will be delivered soon!";
 
             var pickupEventType = await _context.EventTypes.FirstAsync(et => et.Code == EventTypeCode.PickedUp);
 
@@ -165,7 +187,7 @@ namespace PostalSystem.Api.Services
                 PostmanId = postman.PostmanId,
                 WarehouseId = postman.WarehouseId,
                 Timestamp = DateTime.UtcNow,
-                Details = GenerateEventDetailsAsync(EventTypeCode.PickedUp, postman.Name, postman.Warehouse.WarehouseName)
+                Details = details
             };
 
             package.CalculatedStatus = PackageStatus.InTransit;
@@ -449,14 +471,12 @@ namespace PostalSystem.Api.Services
 
             // Verify the package
             if (package == null)
-            {
                 return new ServiceResult<List<EventTrackingDto>>(false, "Package not found.");
-            }
 
             var events = await _context.Events
-                .Include(e => e.EventType)
-                .Include(e => e.Postman)
-                .Include(e => e.Warehouse)
+                // .Include(e => e.EventType)
+                // .Include(e => e.Postman) // These are not needed as we already select them below
+                // .Include(e => e.Warehouse)
                 .Where(e => e.PackageId == trackingGuid)
                 .OrderBy(e => e.Timestamp)
                 .Select(e => new EventTrackingDto(
