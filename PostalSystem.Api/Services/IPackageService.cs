@@ -1,15 +1,14 @@
 using PostalSystem.Api.Dtos;
-using PostalSystem.Api.Models;
 
 namespace PostalSystem.Api.Services
 {
     public interface IPackageService
     {
-        Task<ServiceResult> RegisterPackageAsync(RegisterPackageDto dto);
-        Task<ServiceResult> PickupPackageAsync(PickupRequest request);
-        Task<ServiceResult> TransferPackageAsync(TransferRequest request);
-        Task<ServiceResult> ConfirmDeliveryAsync(ConfirmDeliveryRequest request);
-        Task<ServiceResult> CancelPackageAsync(CancelPackageRequest request);
+        Task<ServiceResult> RegisterPackageAsync(RegisterPackageRequest dto, int postmanId);
+        Task<ServiceResult> PickupPackageAsync(Guid trackingGuid, int postmanId);
+        Task<ServiceResult> TransferPackageAsync(Guid trackingGuid, int postmanId);
+        Task<ServiceResult> ConfirmDeliveryAsync(ConfirmDeliveryRequest request, int postmanId);
+        Task<ServiceResult> CancelPackageAsync(Guid trackingGuid, int postmanId);
         Task<ServiceResult<List<EventTrackingDto>>> GetPackageHistoryAsync(Guid trackingGuid);
     }
 }

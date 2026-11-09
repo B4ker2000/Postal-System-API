@@ -24,6 +24,7 @@ builder.Services.AddDbContext<PostalSystemDbContext>(options =>
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterPackageValidator>();
+builder.Services.AddScoped<IPostmanService, PostmanService>();
 		
 var app = builder.Build();
 

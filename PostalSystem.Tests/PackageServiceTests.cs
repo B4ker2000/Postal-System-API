@@ -48,7 +48,7 @@ namespace PostalSystem.Tests
             await SeedDatabaseAsync(context);
             var service = new PackageService(context, _loggerMock.Object);
 
-            var request = new RegisterPackageDto
+            var request = new RegisterPackageRequest
             {
                 FinalDestinationCityId = 1, 
                 DestinationAddress = "123 Main St",
@@ -56,7 +56,7 @@ namespace PostalSystem.Tests
             };
 
             // Act
-            var result = await service.RegisterPackageAsync(1, request);
+            var result = await service.RegisterPackageAsync(request, 1);
 
             // Assert
             Assert.True(result.IsSuccess);
@@ -74,11 +74,11 @@ namespace PostalSystem.Tests
 
             // Make the postman inactive
             var postman = await context.Postmen.FindAsync(1);
-            postman.IsActive = false;
+            postman!.IsActive = false;
             await context.SaveChangesAsync();
 
             var service = new PackageService(context, _loggerMock.Object);
-            var request = new RegisterPackageDto
+            var request = new RegisterPackageRequest
             {
                 FinalDestinationCityId = 1,
                 DestinationAddress = "123 Main St",
@@ -86,7 +86,7 @@ namespace PostalSystem.Tests
             };
 
             // Act
-            var result = await service.RegisterPackageAsync(1, request);
+            var result = await service.RegisterPackageAsync(request, 1);
 
             // Assert
             Assert.False(result.IsSuccess);
