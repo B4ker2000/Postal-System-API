@@ -198,7 +198,6 @@ namespace PostalSystem.Api.Services
                 return new ServiceResult(false, "The assigned warehouse is currently inactive.");
             }
             
-            
             // Check if the package exists
             if (package == null)
             {
@@ -206,7 +205,7 @@ namespace PostalSystem.Api.Services
                 return new ServiceResult(false, "Package not found.");
             }
 
-            // Make sure the package was not already picked up!
+            // Make sure the package is in transit!
             if (package.CalculatedStatus != PackageStatus.InTransit)
             {
                 _logger.LogWarning("Transfer failed: Package {Guid} is not currently In Transit.", request.TrackingGuid);
@@ -214,6 +213,7 @@ namespace PostalSystem.Api.Services
             }
 
             var warehouse = await _context.Warehouses.FindAsync(postman.WarehouseId);
+            
             // Validate the warehouse 
             if (warehouse == null || !warehouse.IsActive)
             {
@@ -235,7 +235,7 @@ namespace PostalSystem.Api.Services
                 return new ServiceResult(false, "Package is already delivered.");
             }
             
-            // Make sure the package was previously picked up
+            // Make sure the package was previously picked up (technically already checked above when we checked if the package was in transit or not!)
             if (lastEvent == null || lastEvent.EventType.Code != EventTypeCode.PickedUp)
             {
                 _logger.LogWarning("Transfer failed: Package {Guid}'s last event was not 'Picked Up'.", request.TrackingGuid);
@@ -324,7 +324,9 @@ namespace PostalSystem.Api.Services
             }
 
             // Check if the last warehouse is valid, and the package was previously stored in the final destination 
-            // city's warehouse. Package may only be delivered to customers from the destination city warehouse! 
+            // city's warehouse (Although the said warehouse becoming inactive after the postman picks up the package 
+            // should not restrict final delivery but the logic of what will happen if the custom wasn't home may need
+            // more thinking). Package may only be delivered to customers from the destination city warehouse! 
             if (lastEvent.Warehouse == null || package.FinalDestinationCityId != lastEvent.Warehouse.CityId)
             {
                 _logger.LogWarning("Package Delivery failed: Postman is not authorized to deliver {Guid} in cities they are not assigned to.", request.TrackingGuid);

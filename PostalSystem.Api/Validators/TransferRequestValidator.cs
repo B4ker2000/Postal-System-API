@@ -16,7 +16,8 @@ public class TransferRequestValidator : AbstractValidator<TransferRequest>
     // It doesn't help with the actual coding at all, and it certainly increases the
     // needed time to finish tasks at hand but it helps me to be patient with the coding
     // process which is just what I need to remain sane sometimes XD
-    // Although I cannot deny the fact that AI has been a huge help in this- hopefully 
+
+    // Also I cannot deny the fact that AI has been a huge help in this- hopefully 
     // fruitful -coding journey of mine! Without it I may have not even made it this far!
     // Sometimes I kinda wish I was actually as smart as the people who actually did
     // these things before AI. No wonder most used to go bald whilst still in their 
