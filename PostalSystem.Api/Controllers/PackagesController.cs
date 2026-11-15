@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PostalSystem.Api.Dtos;
+using PostalSystem.Api.Models;
 using PostalSystem.Api.Services;
 
 namespace PostalSystem.Api.Controllers
@@ -27,25 +28,24 @@ namespace PostalSystem.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterPackageRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterPackageRequest request, [FromHeader(Name = "X-Postman-Id")] int postmanId)
         {
-            int postmanId = GetPostmanId();
             var result = await _packageService.RegisterPackageAsync(request, postmanId);
 
             if (!result.IsSuccess) 
-                return BadRequest(result);
-            
-            return CreatedAtAction(nameof(GetHistory), new { trackingGuid = (Guid)result.Data! }, result.Data);
+                return BadRequest(result.Message);
 
-            // var responseData = (RegisterPackageResponse)result.Data!; 
-            // // `!` at the end above, tells the compiler to NOT worry about the possibility of it being null 
-            // // since we already checked above it!
-            // // This below is a fancier way of doing the same thing as above but avoiding the bang operator(`!`):
-            // // var responseData = result.Data as RegisterPackageResponse;
-            // // if (result.Data == null)
-            // //     return StatusCode(500, "Internal server error: Registration data was missing.");
+            var package = (Package)result.Data!;
             
-            // return CreatedAtAction(nameof(GetHistory), new { trackingGuid = responseData.TrackingGuid }, result.Data);
+            // REST Standard: 201 Created
+            // 1. Action name: GetHistory
+            // 2. Route values: the trackingGuid for the URL
+            // 3. Response body: the DTO with OTP and Guid
+            return CreatedAtAction(
+                nameof(GetHistory), 
+                new { trackingGuid = package.TrackingGuid }, 
+                new RegisterPackageResponse(package.TrackingGuid, package.DeliveryOTP)
+            );
         }
 
         [HttpPost("pickup")]
@@ -55,9 +55,9 @@ namespace PostalSystem.Api.Controllers
             var result = await _packageService.PickupPackageAsync(trackingGuid, postmanId);
             
             if (!result.IsSuccess)
-                return BadRequest(result);
+                return BadRequest(result.Message);
             
-            return Ok(result);
+            return Ok(new { message = result.Message });
         }
 
         [HttpPost("transfer")]
@@ -67,9 +67,9 @@ namespace PostalSystem.Api.Controllers
             var result = await _packageService.TransferPackageAsync(trackingGuid, postmanId);
             
             if (!result.IsSuccess)
-                return BadRequest(result);
+                return BadRequest(result.Message);
 
-            return Ok(result);
+            return Ok(new { message = result.Message });
         }
 
         [HttpPost("confirm-delivery")]
@@ -79,9 +79,9 @@ namespace PostalSystem.Api.Controllers
             var result = await _packageService.ConfirmDeliveryAsync(request, postmanId);
 
             if (!result.IsSuccess)
-                return BadRequest(result);
+                return BadRequest(result.Message);
 
-            return Ok(result);
+            return Ok(new { message = result.Message });
         }
 
         [HttpPost("cancel")]
@@ -91,9 +91,9 @@ namespace PostalSystem.Api.Controllers
             var result = await _packageService.CancelPackageAsync(trackingGuid, postmanId);
             
             if (!result.IsSuccess)
-                return BadRequest(result);
+                return BadRequest(result.Message);
 
-            return Ok(result);
+            return Ok(new { message = result.Message });
         }
 
         [HttpGet("history/{trackingGuid}")]
@@ -102,7 +102,7 @@ namespace PostalSystem.Api.Controllers
             var result = await _packageService.GetPackageHistoryAsync(trackingGuid);
 
             if (!result.IsSuccess)
-                return NotFound(result);
+                return NotFound(result.Message);
 
             return Ok(result.Data);
         }
