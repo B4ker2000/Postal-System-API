@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Postman Dashboard</title>
+        <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="../css/dashboard.css">
+    </head>
+    <body>
+        <div class="header">
+            <h1 class="user-info">
+                Postal Terminal
+            </h1>
+            <div class="nav-controls">
+                <button class="lang-toggle" id="langToggle">EN / FA</button>
+                <button class="logout-btn" id="logoutBtn">LOGOUT</button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="action-card register-package">
+                <h2>Register Package</h2>
+                <div class="form-group">
+                    <label for="regDestCitySelect">Destination City</label>
+                    <select id="regDestCitySelect" class="form-control">
+                        <option value="">-- Select Destination City --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="regAddress">Destination Address</label>
+                    <input type="text" id="regAddress" placeholder="Street, House №...">
+                </div>
+                <div class="form-group fragile">
+                    <label for="regFragile"
+                           class="fragile-label">
+                        <input type="checkbox" id="regFragile">
+                        <span>Fragile Package</span>
+                    </label>
+                </div>
+                <button id="regBtn">REGISTER</button>
+            </div>
+
+            <div class="action-card pickup-package">
+                <h2>Pickup Package</h2>
+                <div class="form-group">
+                    <label for="pickGuid">Tracking GUID</label>
+                    <input type="text" id="pickGuid" placeholder="Enter Tracking GUID...">
+                </div>
+                <button id="pickBtn">PICK UP</button>
+            </div>
+
+            <div class="action-card transfer-package">
+                <h2>Transfer Package</h2>
+                <div class="form-group">
+                    <label for="transGuid">Tracking GUID</label>
+                    <input type="text" id="transGuid" placeholder="Enter Tracking GUID...">
+                </div>
+                <button id="transferBtn">TRANSFER INTO WAREHOUSE</button>
+            </div>
+
+            <div class="action-card confirm-delivery">
+                <h2>Confirm Delivery</h2>
+                <div class="form-group">
+                    <label for="deliverGuid">Tracking GUID</label>
+                    <input type="text" id="deliverGuid" placeholder="Enter Tracking GUID...">
+                </div>
+                <div class="form-group">
+                    <label for="deliverOtp">Delivery OTP</label>
+                    <input type="text" id="deliverOtp" placeholder="6-digit code...">
+                </div>
+                <button id="deliverBtn">CONFIRM DELIVERY</button>
+            </div>
+
+            <div class="action-card cancel-package">
+                <h2>Cancel Package</h2>
+                <div class="form-group">
+                    <label for="cancelGuid">Tracking GUID</label>
+                    <input type="text" id="cancelGuid" placeholder="Enter Tracking GUID...">
+                </div>
+                <button id="cancelBtn">CANCEL</button>
+            </div>
+
+            <div class="action-card history-container">
+                <h2>Tracking History</h2>
+                <div class="form-group">
+                    <label for="histGuid">Tracking GUID</label>
+                    <div class="form-group input-group">
+                        <input type="text" id="histGuid" placeholder="Enter Tracking GUID...">
+                        <button id="histBtn">SEARCH</button>
+                    </div>
+                </div>
+                <div id="histList" class="history-list">
+                    No history loaded. Search for a package.
+                </div>
+            </div>
+        </div>
+
+        <script src="../js/api.js"></script>
+        <script src="../js/dashboard.js"></script>
+    </body>
+</html>

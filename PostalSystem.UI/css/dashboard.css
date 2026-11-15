@@ -1,0 +1,135 @@
+body {
+    display: block;
+    padding: 20px;
+    background-color: var(--bg-color);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+    padding: 0 20px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.user-info {
+    font-size: 30px;
+    font-weight: bold;
+    margin-top: 24px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.action-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 5px 15px var(--shadow);
+    text-align: left; /* temp */
+}
+
+.action-card h2 {
+    color: var(--accent);
+    margin-top: 0;
+    font-size: 20px;
+    border-bottom: 1px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-style: italic; /* temp */
+    letter-spacing: 1px;
+}
+
+.history-container {
+    grid-column: 1 / -1; /* Makes this container have full width! */
+    margin-top: 20px;
+}
+
+.history-container .input-group {
+    display: flex; 
+    gap: 10px;
+}
+
+.history-container .input-group input {
+    flex: 1;
+}
+
+.history-container .input-group button {
+    width: auto; 
+    margin: 0;
+}
+
+.history-list {
+    margin-top: 15px;
+    color: var(--text-main);
+    font-size: 14px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--bg-color);
+    padding: 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--primary-color);
+}
+
+.history-item {
+    padding: 8px;
+    border-bottom: 1px solid var(--secondary-color); /* #333 */
+}
+
+.logout-btn {
+    width: auto;
+    padding: 8px 20px;
+    margin: 0;
+    font-size: 14px;
+}
+
+.lang-toggle {
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    width: auto;
+    margin-inline-end: 10px;
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.form-group.fragile {
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
+    cursor: pointer;
+    margin-inline-start: -4px;
+}
+
+.form-group.fragile input {
+    width: auto;
+}
+
+.form-group.fragile label {
+    margin-bottom: 0;
+}
+
+.fragile-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.cancel-package button {
+    background-color: var(--cancel-btn);
+}
+
+.cancel-package button:hover {
+    background-color: var(--error); 
+}
