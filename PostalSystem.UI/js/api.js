@@ -1,5 +1,48 @@
 const API_BASE_URL = 'http://localhost:5176/api';
 
+async function loadNavbar() {
+    const placeholder = document.getElementById('navbar-placeholder');
+    if (!placeholder) return;
+
+    try {
+        // Since we are in the /js/ folder, we go up one level then to nav.html
+        const response = await fetch('../html/nav.html');
+        const html = await response.text();
+        placeholder.innerHTML = html;
+
+        // Re-bind events because the elements are newly injected
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.onclick = () => {
+                sessionStorage.removeItem('postmanId');
+                window.location.href = 'index.html';
+            };
+        }
+        
+        const langToggle = document.getElementById('langToggle');
+        if (langToggle) {
+            langToggle.onclick = () => {
+                console.log("Quack! Language toggled.");
+                // Implement toggleLanguage() logic here or in a separate UI file
+            };
+        }
+        
+        const backBtn = document.getElementById('backBtn');
+        if (backBtn) {
+            // Hide the back button if we are already on the dashboard!
+            if (window.location.pathname.includes('dashboard.html')) {
+                backBtn.style.display = 'none';
+            } else {
+                backBtn.onclick = () => {
+                    window.location.href = 'dashboard.html';
+                };
+            }
+        }
+    } catch (err) {
+        console.error("Quack! Failed to load navbar:", err);
+    }
+}
+
 async function apiRequest(endpoint, options = {}) {
     const postmanId = sessionStorage.getItem('postmanId');
 

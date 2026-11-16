@@ -1,4 +1,3 @@
-using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 using PostalSystem.Api.Data;
 using PostalSystem.Api.Dtos;
@@ -87,7 +86,7 @@ namespace PostalSystem.Api.Services
                 PostmanId = postmanId,
                 WarehouseId = postman.WarehouseId, // This marks the Origin!
                 Timestamp = DateTime.UtcNow,
-                Details = GenerateEventDetailsAsync(EventTypeCode.Registered, postman.Name, postman.Warehouse.WarehouseName)
+                Details = GenerateEventDetails(EventTypeCode.Registered, postman.Name, postman.Warehouse.WarehouseName)
             };
 
             _context.Events.Add(registrationEvent);
@@ -100,19 +99,19 @@ namespace PostalSystem.Api.Services
                    new RegisterPackageResponse(package.TrackingGuid, package.DeliveryOTP));
         }
 
-        public async Task<ServiceResult> PickupPackageAsync(Guid trackingGuid, int postmanId)
+        public async Task<ServiceResult> PickupPackageAsync(GuidRequest Guid, int postmanId)
         {
             var postman = await _context.Postmen
                 .Include(p => p.Warehouse)
                 .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
                 
-            var package = await _context.Packages.FindAsync(trackingGuid);
+            var package = await _context.Packages.FindAsync(Guid.TrackingGuid);
 
             // Validate the postman and check if their home warehouse exists or not
-            if (postman == null || !postman.IsActive || postman.Warehouse == null)
+            if (postman == null || postman.Warehouse == null)
             {
-                _logger.LogWarning("Pickup failed: Active postman {PostmanId} not found or is not active.", postmanId);
-                return new ServiceResult(false, "Active postman not found or is not active.");
+                _logger.LogWarning("Pickup failed: Active postman {PostmanId} or assigned warehouse not found.", postmanId);
+                return new ServiceResult(false, "Active postman or assigned warehouse not found.");
             }
 
             // Validate if the postman's warehouse is active or not
@@ -125,7 +124,7 @@ namespace PostalSystem.Api.Services
             // Validate the package
             if (package == null)
             {
-                _logger.LogWarning("Pickup failed: Package {Guid} not found.", trackingGuid);
+                _logger.LogWarning("Pickup failed: Package {Guid} not found.", Guid.TrackingGuid);
                 return new ServiceResult(false, "Package not found.");
             }
 
@@ -135,44 +134,18 @@ namespace PostalSystem.Api.Services
                 .OrderByDescending(e => e.Timestamp)
                 .FirstOrDefaultAsync();
 
-            // Verify the package is at the postman's assigned warehouse
-            if (lastEvent == null || lastEvent.WarehouseId != postman.WarehouseId)
+            // Combined check: Must exist, be at the correct warehouse, AND be in a pick-up-able state
+            if (lastEvent == null || 
+                lastEvent.WarehouseId != postman.WarehouseId || 
+                (lastEvent.EventType.Code != EventTypeCode.Registered && lastEvent.EventType.Code != EventTypeCode.InWarehouse))
             {
-                _logger.LogWarning("Pickup failed: Package {Guid} is not at postman {PostmanId}'s assigned warehouse.", trackingGuid, postmanId);
-                return new ServiceResult(false, "Package is not at the postman's assigned warehouse.");
-            }
-
-            // Make sure the package was previously registered and it is inside a warehouse (not picked up yet)
-            if (lastEvent.EventType.Code != EventTypeCode.Registered && lastEvent.EventType.Code != EventTypeCode.InWarehouse)
-            {
-                _logger.LogWarning("Pickup failed: Package {Guid} is in an invalid state for pickup (Last Event: {Code}).", trackingGuid, lastEvent.EventType.Code);
-                return new ServiceResult(false, "Package is not in a state that allows for pickup.");
-            }
-
-            // Ensure the package was not previously picked up!
-            if (lastEvent.EventType.Code == EventTypeCode.PickedUp)
-            {
-                _logger.LogWarning("Pickup failed: Package {Guid} has already been picked up.", trackingGuid);
-                return new ServiceResult(false, "Package has already been picked up.");
-            }
-
-            // Make sure the package was previously registered and it is inside a warehouse (not picked up yet)
-            if (lastEvent.EventType.Code != EventTypeCode.Registered && lastEvent.EventType.Code != EventTypeCode.InWarehouse)
-            {
-                _logger.LogWarning("Pickup failed: Package {Guid} is in an invalid state for pickup (Last Event: {Code}).", trackingGuid, lastEvent.EventType.Code);
-                return new ServiceResult(false, "Package is not in a state that allows for pickup.");
-            }
-
-            // Make sure the package wasn't delivered previously
-            if (lastEvent.EventType.Code == EventTypeCode.Delivered)
-            {
-                _logger.LogWarning("Pickup failed: Package {Guid} was already delivered.", trackingGuid);
-                return new ServiceResult(false, "Package is already delivered.");
+                _logger.LogWarning("Pickup failed: Package {Guid} is not available for pickup at your warehouse.", Guid.TrackingGuid);
+                return new ServiceResult(false, "Package is not available for pickup at your warehouse.");
             }
 
             // To make the details message a little more dynamic whether it is mearly in transit or is out for delivery we'll 
             // generate the message before hand, check in what state the package is, and then add the extra details afterwards!
-            string details = GenerateEventDetailsAsync(EventTypeCode.PickedUp, postman.Name, postman.Warehouse.WarehouseName);
+            string details = GenerateEventDetails(EventTypeCode.PickedUp, postman.Name, postman.Warehouse.WarehouseName);
 
             if (postman.Warehouse.CityId == package.FinalDestinationCityId)
                 details += " این بسته به شهر مقصد رسیده و به زودی تحویل داده خواهد شد.";
@@ -198,13 +171,13 @@ namespace PostalSystem.Api.Services
             return new ServiceResult(true, "Package picked up successfully!");
         }
 
-        public async Task<ServiceResult> TransferPackageAsync(Guid trackingGuid, int postmanId)
+        public async Task<ServiceResult> TransferPackageAsync(GuidRequest request, int postmanId)
         {
             var postman = await _context.Postmen
                 .Include(p => p.Warehouse)
                 .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
             
-            var package = await _context.Packages.FindAsync(trackingGuid);
+            var package = await _context.Packages.FindAsync(request.TrackingGuid);
             
             // Validate the postman and check if their home warehouse exists or not
             if (postman == null || !postman.IsActive || postman.Warehouse == null)
@@ -223,14 +196,14 @@ namespace PostalSystem.Api.Services
             // Check if the package exists
             if (package == null)
             {
-                _logger.LogWarning("Transfer failed: Package {Guid} not found.", trackingGuid);
+                _logger.LogWarning("Transfer failed: Package {Guid} not found.", request.TrackingGuid);
                 return new ServiceResult(false, "Package not found.");
             }
 
             // Make sure the package is in transit!
             if (package.CalculatedStatus != PackageStatus.InTransit)
             {
-                _logger.LogWarning("Transfer failed: Package {Guid} is not currently In Transit.", trackingGuid);
+                _logger.LogWarning("Transfer failed: Package {Guid} is not currently In Transit.", request.TrackingGuid);
                 return new ServiceResult(false, "Package status doesn't allow transfer to a new warehouse.");
             }
 
@@ -253,14 +226,14 @@ namespace PostalSystem.Api.Services
             // Make sure the package wasn't delivered
             if (lastEvent?.EventType.Code == EventTypeCode.Delivered)
             {
-                _logger.LogWarning("Package Transfer failed: Package {Guid} was already delivered.", trackingGuid);
+                _logger.LogWarning("Package Transfer failed: Package {Guid} was already delivered.", request.TrackingGuid);
                 return new ServiceResult(false, "Package is already delivered.");
             }
             
             // Make sure the package was previously picked up (technically already checked above when we checked if the package was in transit or not!)
             if (lastEvent == null || lastEvent.EventType.Code != EventTypeCode.PickedUp)
             {
-                _logger.LogWarning("Transfer failed: Package {Guid}'s last event was not 'Picked Up'.", trackingGuid);
+                _logger.LogWarning("Transfer failed: Package {Guid}'s last event was not 'Picked Up'.", request.TrackingGuid);
                 return new ServiceResult(false, $"Last package status is not '{EventTypeCode.PickedUp}'.");
             }
 
@@ -268,7 +241,7 @@ namespace PostalSystem.Api.Services
             // not be transferred to a different warehouse in a different city once they reach the destination city!
             if (lastEvent.Warehouse.CityId == package.FinalDestinationCityId && postman.Warehouse.CityId != package.FinalDestinationCityId)
             {
-                _logger.LogWarning("Package Transfer failed: Package {Guid} was already in the final destination city! You cannot transfer it to another warehouse in a different city.", trackingGuid);
+                _logger.LogWarning("Package Transfer failed: Package {Guid} was already in the final destination city! You cannot transfer it to another warehouse in a different city.", request.TrackingGuid);
                 return new ServiceResult(false, "Package may not leave destination city once it arrives there.");
             }
 
@@ -281,7 +254,7 @@ namespace PostalSystem.Api.Services
                 PostmanId = postmanId,
                 WarehouseId = warehouse.WarehouseId,
                 Timestamp = DateTime.UtcNow,
-                Details = GenerateEventDetailsAsync(EventTypeCode.InWarehouse, postman.Name, postman.Warehouse.WarehouseName)
+                Details = GenerateEventDetails(EventTypeCode.InWarehouse, postman.Name, postman.Warehouse.WarehouseName)
             };
 
             package.CalculatedStatus = PackageStatus.InWarehouse;
@@ -371,7 +344,7 @@ namespace PostalSystem.Api.Services
                 PostmanId = postman.PostmanId,
                 WarehouseId = lastEvent.Warehouse.WarehouseId,
                 Timestamp = DateTime.UtcNow,
-                Details = GenerateEventDetailsAsync(EventTypeCode.Delivered, postman.Name, postman.Warehouse.WarehouseName)
+                Details = GenerateEventDetails(EventTypeCode.Delivered, postman.Name, postman.Warehouse.WarehouseName)
             };
 
             package.CalculatedStatus = PackageStatus.Delivered;
@@ -455,7 +428,7 @@ namespace PostalSystem.Api.Services
                 PostmanId = postman.PostmanId,
                 WarehouseId = lastEvent.WarehouseId,
                 Timestamp = DateTime.UtcNow,
-                Details = GenerateEventDetailsAsync(EventTypeCode.Canceled, postman.Name, postman.Warehouse.WarehouseName)
+                Details = GenerateEventDetails(EventTypeCode.Canceled, postman.Name, postman.Warehouse.WarehouseName)
             };
 
             _context.Events.Add(cancelEvent);
@@ -493,7 +466,49 @@ namespace PostalSystem.Api.Services
             return new ServiceResult<List<EventTrackingDto>>(true, "History retrieved successfully!", events);
         }
 
-        private string GenerateEventDetailsAsync(string eventCode, string pName, string wName)
+        public async Task<ServiceResult<List<InventoryTrackingDto>>> GetWarehouseInventoryAsync(int postmanId)
+        {
+            var postman = await _context.Postmen
+                .Include(p => p.Warehouse)
+                .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
+            
+            // Validate the postman and check if their home warehouse exists or not
+            if (postman == null || postman.Warehouse == null)
+            {
+                _logger.LogWarning("Inventory fetch failed: Active postman {PostmanId} not found.", postmanId);
+                return new ServiceResult<List<InventoryTrackingDto>>(false, "Active postman not found.");
+            }
+
+            // Validate if the postman's warehouse is active or not
+            if (!postman.Warehouse.IsActive)
+            {
+                _logger.LogWarning("Inventory fetch failed: Warehouse {WarehouseName} is inactive.", postman.Warehouse.WarehouseName);
+                return new ServiceResult<List<InventoryTrackingDto>>(false, "The assigned warehouse is currently inactive.");
+            }
+
+            // Find packages where the LATEST event is 'In Warehouse' (PW1) or 'Registered' (PR1)
+            // and that event happened at THIS warehouse.
+            var warehouseId = postman.WarehouseId;
+            
+            // Find events that are PW1 ro PR1 at this warehouse,
+            // AND ensure there is NO event for the same package with a later timestamp.
+            var packages = await _context.Events
+                .Where(e => e.WarehouseId == warehouseId &&
+                            (e.EventType.Code == "PW1" || e.EventType.Code == "PR1") &&
+                            !_context.Events.Any(e2 => e2.PackageId == e.PackageId && e2.Timestamp > e.Timestamp))
+                .Select(e => new InventoryTrackingDto(
+                    e.Package.TrackingGuid,
+                    e.Package.FinalDestinationCityId,
+                    e.Package.DestinationAddress,
+                    e.Package.IsFlaggedAsFragile,
+                    e.Timestamp
+                ))
+                .ToListAsync();
+
+            return new ServiceResult<List<InventoryTrackingDto>>(true, "Warehouse inventory retrieved successfully!", packages);
+        }
+
+        private string GenerateEventDetails(string eventCode, string pName, string wName)
         {
             return eventCode switch
             {

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pickup Package - Postal Terminal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/pickup.css">
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <div class="main-container">
+        <div class="action-card pickup-package">
+            <h2>Pickup Package</h2>
+
+            <div class="available-section">
+                <h3>Available in Your Warehouse</h3>
+                <div class="table-wrapper">
+                    <table class="package-table">
+                        <thead>
+                            <tr>
+                                <th>Tracking GUID</th>
+                                <th>Destination</th>
+                                <th>Fragile</th>
+                            </tr>
+                        </thead>
+                        <tbody id="availablePackagesList">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="manual-section">
+                <h3>Manual Entry</h3>
+                <div class="form-group">
+                    <label for="pickGuid">Tracking GUID</label>
+                    <input type="text" id="pickGuid" placeholder="Enter Tracking GUID...">
+                </div>
+                <button id="pickBtn">PICK UP</button>
+            </div>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/pickup.js"></script>
+</body>
+</html>

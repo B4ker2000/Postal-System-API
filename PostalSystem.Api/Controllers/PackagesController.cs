@@ -35,7 +35,8 @@ namespace PostalSystem.Api.Controllers
             if (!result.IsSuccess) 
                 return BadRequest(result.Message);
 
-            var package = (Package)result.Data!;
+            // Cast to the Response DTO
+            var response = (RegisterPackageResponse)result.Data!;
             
             // REST Standard: 201 Created
             // 1. Action name: GetHistory
@@ -43,16 +44,15 @@ namespace PostalSystem.Api.Controllers
             // 3. Response body: the DTO with OTP and Guid
             return CreatedAtAction(
                 nameof(GetHistory), 
-                new { trackingGuid = package.TrackingGuid }, 
-                new RegisterPackageResponse(package.TrackingGuid, package.DeliveryOTP)
+                new { trackingGuid = response.TrackingGuid }, 
+                response
             );
         }
 
         [HttpPost("pickup")]
-        public async Task<IActionResult> Pickup(Guid trackingGuid)
+        public async Task<IActionResult> Pickup([FromBody] GuidRequest request, [FromHeader(Name = "X-Postman-Id")] int postmanId)
         {
-            int postmanId = GetPostmanId();
-            var result = await _packageService.PickupPackageAsync(trackingGuid, postmanId);
+            var result = await _packageService.PickupPackageAsync(request, postmanId);
             
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
@@ -61,10 +61,9 @@ namespace PostalSystem.Api.Controllers
         }
 
         [HttpPost("transfer")]
-        public async Task<IActionResult> Transfer(Guid trackingGuid)
+        public async Task<IActionResult> Transfer([FromBody] GuidRequest request, [FromHeader(Name = "X-Postman-Id")] int postmanId)
         {
-            int postmanId = GetPostmanId();
-            var result = await _packageService.TransferPackageAsync(trackingGuid, postmanId);
+            var result = await _packageService.TransferPackageAsync(request, postmanId);
             
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
@@ -103,6 +102,28 @@ namespace PostalSystem.Api.Controllers
 
             if (!result.IsSuccess)
                 return NotFound(result.Message);
+
+            return Ok(result.Data);
+        }
+
+        [HttpGet("available-in-warehouse/{warehouseId}")]
+        public async Task<IActionResult> GetAvailableInWarehouse(int warehouseId)
+        {
+            var result = await _packageService.GetWarehouseInventoryAsync(warehouseId);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
+            return Ok(result.Data);
+        }
+
+        [HttpGet("available")]
+        public async Task<IActionResult> GetAvailable([FromHeader(Name = "X-Postman-Id")] int postmanId)
+        {
+            var result = await _packageService.GetWarehouseInventoryAsync(postmanId);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
 
             return Ok(result.Data);
         }

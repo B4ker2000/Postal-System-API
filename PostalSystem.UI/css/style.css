@@ -4,7 +4,7 @@
     --bg-card: #16161e;             /* Slightly lighter black/purple */
     --primary-color: #1a3c34;       /* Dark Forest Green */
     --secondary-color: #6a0dad;     /* Purple for a magical contrast! */
-    --accent: #d4af37;              /* Gold (Contrasts very well with Dark Greens!) */
+    --accent: #d4af37;              /* Gold (Contrasts well with Dark Greens!) */
     --text-main: #e0e0e0;           /* Off-white/Silver text */
     --text-muted: #a0a0a0;          /* Muted silver */
     --shadow: rgba(0, 0, 0, 0.5);   
@@ -50,15 +50,9 @@ h1 {
     letter-spacing: 2px;
 }
 
-.form-group {
-    margin-bottom: 16px;
-    text-align: var(--text-dir);    /* the value itself is temp */
-}
-
 label {
     display: block;
     color: var(--text-muted);
-    margin-bottom: 8px;
     font-size: 14px;
 }
 
@@ -111,4 +105,158 @@ button:hover {
 
 .success-text {
     color: var(--success);
+}
+
+/* Page Navigation */
+.nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+    padding: 0 20px 10px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-back-btn {
+    width: auto;
+    padding: 5px 15px;
+    margin: 0;
+    font-size: 14px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--primary-color);
+    color: var(--text-main)
+}
+
+.nav-back-btn:hover {
+    background-color: var(--secondary-color);
+    color: var(--accent);
+}
+
+.lang-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    width: auto;
+    margin: 0;
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+
+.lang-toggle:hover {
+    background-color: var(--accent);
+    color: var(--bg-color);
+}
+
+.logout-btn {
+    width: auto;
+    padding: 8px 20px;
+    margin: 0;
+    font-size: 14px;
+    border-color: var(--error);
+    color: var(--error);
+}
+
+.logout-btn:hover {
+    background: var(--error);
+    color: white;
+}
+
+/* Page Layout */
+.page-title {
+    font-size: 30px;
+    margin: 0;
+    color: var(--accent);
+}
+
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 5px;
+    width: 100%;
+}
+
+.page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+    padding: 20px;
+}
+
+.form-card {
+    background-color: var(--bg-card);
+    padding: 40px;
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px var(--shadow);
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.form-card h2 {
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 30px;
+    font-family: var(--primary-font);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: var(--text-dir);
+}
+
+.form-group.fragile {
+    margin-bottom: 0;
+}
+
+.checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.action-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 5px 15px var(--shadow);
+    text-align: center;
+    cursor: pointer;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+    transition: var(--transition);
+}
+
+.action-card p {
+    height: 30px;
+}
+
+.action-card h2 {
+    color: var(--accent);
+    margin-top: 0;
+    font-size: 20px;
+    border-bottom: 1px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-style: italic; /* temp */
+    letter-spacing: 1px;
 }

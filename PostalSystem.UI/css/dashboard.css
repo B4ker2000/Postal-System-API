@@ -1,16 +1,17 @@
 body {
     display: block;
     padding: 20px;
-    background-color: var(--bg-color);
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto 30px auto;
     padding: 0 20px;
+    box-sizing: border-box;
     border-bottom: 2px solid var(--primary-color);
 }
 
@@ -28,25 +29,8 @@ body {
     margin: 0 auto;
 }
 
-.action-card {
-    background-color: var(--bg-card);
-    border: 1px solid var(--primary-color);
-    border-radius: var(--radius);
-    padding: 24px;
-    box-shadow: 0 5px 15px var(--shadow);
-    text-align: left; /* temp */
-}
-
-.action-card h2 {
-    color: var(--accent);
-    margin-top: 0;
-    font-size: 20px;
-    border-bottom: 1px solid var(--primary-color);
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    font-style: italic; /* temp */
-    letter-spacing: 1px;
+.register-package {
+    width: 400px;
 }
 
 .history-container {
@@ -85,37 +69,16 @@ body {
     border-bottom: 1px solid var(--secondary-color); /* #333 */
 }
 
-.logout-btn {
-    width: auto;
-    padding: 8px 20px;
-    margin: 0;
-    font-size: 14px;
-}
-
-.lang-toggle {
-    background: none;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    width: auto;
-    margin-inline-end: 10px;
-    padding: 5px 10px;
-    font-size: 12px;
-}
-
 .form-group.fragile {
     display: flex; 
-    align-items: center; 
+    align-items: var(--text-dir); 
     gap: 10px;
     cursor: pointer;
-    margin-inline-start: -4px;
+    width: fit-content;
 }
 
-.form-group.fragile input {
+.fragile-label input {
     width: auto;
-}
-
-.form-group.fragile label {
-    margin-bottom: 0;
 }
 
 .fragile-label {
