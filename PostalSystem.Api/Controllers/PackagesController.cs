@@ -16,24 +16,13 @@ namespace PostalSystem.Api.Controllers
             _packageService = packageService;
         }
 
-        // Helper to get PostmanId from header
-        private int GetPostmanId()
-        {
-            if (!Request.Headers.TryGetValue("X-Postman-Id", out var value) || !int.TryParse(value, out var id))
-            {
-                throw new UnauthorizedAccessException("Postman ID is missing or invalid in headers.");
-            }
-
-            return id;
-        }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterPackageRequest request, [FromHeader(Name = "X-Postman-Id")] int postmanId)
         {
             var result = await _packageService.RegisterPackageAsync(request, postmanId);
 
             if (!result.IsSuccess) 
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
 
             // Cast to the Response DTO
             var response = (RegisterPackageResponse)result.Data!;
@@ -55,7 +44,7 @@ namespace PostalSystem.Api.Controllers
             var result = await _packageService.PickupPackageAsync(request, postmanId);
             
             if (!result.IsSuccess)
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
             
             return Ok(new { message = result.Message });
         }
@@ -66,53 +55,51 @@ namespace PostalSystem.Api.Controllers
             var result = await _packageService.TransferPackageAsync(request, postmanId);
             
             if (!result.IsSuccess)
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
 
             return Ok(new { message = result.Message });
         }
 
         [HttpPost("confirm-delivery")]
-        public async Task<IActionResult> ConfirmDelivery([FromBody] ConfirmDeliveryRequest request)
+        public async Task<IActionResult> ConfirmDelivery([FromBody] ConfirmDeliveryRequest request, [FromHeader(Name = "X-Postman-Id")] int postmanId)
         {
-            int postmanId = GetPostmanId();
             var result = await _packageService.ConfirmDeliveryAsync(request, postmanId);
 
             if (!result.IsSuccess)
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
 
             return Ok(new { message = result.Message });
         }
 
         [HttpPost("cancel")]
-        public async Task<IActionResult> Cancel(Guid trackingGuid)
+        public async Task<IActionResult> Cancel([FromBody] GuidRequest request, [FromHeader(Name = "X-Postman-Id")] int postmanId)
         {
-            int postmanId = GetPostmanId();
-            var result = await _packageService.CancelPackageAsync(trackingGuid, postmanId);
+            var result = await _packageService.CancelPackageAsync(request.TrackingGuid, postmanId);
             
             if (!result.IsSuccess)
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
 
             return Ok(new { message = result.Message });
         }
 
-        [HttpGet("history/{trackingGuid}")]
+        [HttpGet("history/{trackingGuid}")] // SENIOR: swap it to `{trackingGuid}/history`
         public async Task<IActionResult> GetHistory(Guid trackingGuid)
         {
             var result = await _packageService.GetPackageHistoryAsync(trackingGuid);
 
             if (!result.IsSuccess)
-                return NotFound(result.Message);
+                return NotFound(new { message = result.Message });
 
             return Ok(result.Data);
         }
 
-        [HttpGet("available-in-warehouse/{warehouseId}")]
+        [HttpGet("available-in-warehouse/{warehouseId}")] // SENIOR: Isn't this unneccessary?
         public async Task<IActionResult> GetAvailableInWarehouse(int warehouseId)
         {
             var result = await _packageService.GetWarehouseInventoryAsync(warehouseId);
 
             if (!result.IsSuccess)
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
 
             return Ok(result.Data);
         }
@@ -123,18 +110,40 @@ namespace PostalSystem.Api.Controllers
             var result = await _packageService.GetWarehouseInventoryAsync(postmanId);
 
             if (!result.IsSuccess)
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
 
             return Ok(result.Data);
         }
 
-        [HttpGet("in-transit")]
+        [HttpGet("in-transit")] // SENIOR: This should also get the postman id and check if it's null or not!
         public async Task<IActionResult> GetInTransit()
         {
             var result = await _packageService.GetInTransitPackagesAsync();
 
             if (!result.IsSuccess)
-                return BadRequest(result.Message);
+                return BadRequest(new { message = result.Message });
+
+            return Ok(result.Data);
+        }
+
+        [HttpGet("picked-up")]
+        public async Task<IActionResult> GetPickedUp([FromHeader(Name = "X-Postman-Id")] int postmanId)
+        {
+            var result = await _packageService.GetPickedUpPackagesAsync(postmanId);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.Message });
+
+            return Ok(result.Data);
+        }
+
+        [HttpGet("can-be-cancelled")]
+        public async Task<IActionResult> CancelPackageListAsync([FromHeader(Name = "X-Postman-Id")] int postmanId)
+        {
+            var result = await _packageService.GetCancellablePackagesAsync(postmanId);
+
+            if (!result.IsSuccess)
+                return BadRequest(new { message = result.Message });
 
             return Ok(result.Data);
         }

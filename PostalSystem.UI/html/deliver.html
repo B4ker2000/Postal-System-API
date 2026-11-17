@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Deliver Package</title>
+        <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="../css/pickup.css">
+        <!-- <link rel="stylesheet" href="../css/deliver.css"> -->
+    </head>
+    <body>
+        <div id="navbar-placeholder"></div>
+
+        <main class="main-container">
+            <div class="action-card deliver-package">
+                <h2>Deliver a Package You Currently Have</h2>
+
+                <section class="available-section">
+                    <h3>Packages You Currently Have</h3>
+                    <div class="table-wrapper">
+                        <table class="package-table">
+                            <thead>
+                                <tr>
+                                    <th>Tracking GUID</th>
+                                    <th>Destination</th>
+                                    <th>Fragile</th>
+                                </tr>
+                            </thead>
+                            <tbody id="availablePackagesList">
+                                <!-- Rows added via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <hr class="divider">
+
+                <section class="manual-section">
+                    <h3>Manual Entry</h3>
+                    <div class="form-group">
+                        <label for="pickGuid">Tracking GUID</label>
+                        <input type="text" id="pickGuid" placeholder="Enter Tracking GUID...">
+                    </div>
+                    <div class="form-group">
+                        <label for="pickOtp">Delivery OTP</label>
+                        <input type="text" id="pickOtp" placeholder="Enter The OTP provided during the package registeration...">
+                    </div>
+                    <button id="pickBtn">DELIVER</button>
+                </section>
+                <div id="message"></div>
+            </div>
+        </main>
+
+        <script src="../js/api.js"></script>
+        <script src="../js/deliver.js"></script>
+    </body>
+</html>

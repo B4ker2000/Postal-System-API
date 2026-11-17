@@ -1,0 +1,25 @@
+.search-container {
+    display: flex;
+    gap: 15px;
+}
+
+.search-container label {
+    align-self: center;
+    padding-bottom: 20px;
+}
+
+.search-container .form-group {
+    flex: 1;
+    flex-direction: row;
+}
+
+.search-container .form-group input {
+    max-height: 50px;
+}
+
+.search-container .form-group button {
+    max-height: 50px;
+    max-width: 120px;
+    white-space: nowrap;
+    margin: 0;
+}

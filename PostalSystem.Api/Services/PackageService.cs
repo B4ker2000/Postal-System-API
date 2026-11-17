@@ -14,7 +14,7 @@ namespace PostalSystem.Api.Services
         {
             _context = context;
             _logger = logger;
-        }
+        } // SENIOR: Move all of the repeating checks like postman and package tests into a separate method and call that instead!
 
         public async Task<ServiceResult> RegisterPackageAsync(RegisterPackageRequest dto, int postmanId)
         {
@@ -27,7 +27,7 @@ namespace PostalSystem.Api.Services
                 .FirstOrDefaultAsync(c => c.CityId == dto.FinalDestinationCityId);
 
             // Validate the postman and check if their home warehouse exists or not
-            if (postman == null || !postman.IsActive || postman.Warehouse == null)
+            if (postman == null || !postman.IsActive || postman.Warehouse == null) // SENIOR: `!postman.IsActive` is not needed
             {
                 _logger.LogWarning("Registration failed: Active postman {PostmanId} not found or is not active.", postmanId);
                 return new ServiceResult(false, "Active postman not found or is not active.");
@@ -447,9 +447,6 @@ namespace PostalSystem.Api.Services
                 return new ServiceResult<List<EventTrackingDto>>(false, "Package not found.");
 
             var events = await _context.Events
-                // .Include(e => e.EventType)
-                // .Include(e => e.Postman) // These are not needed as we already select them below
-                // .Include(e => e.Warehouse)
                 .Where(e => e.PackageId == trackingGuid)
                 .OrderBy(e => e.Timestamp)
                 .Select(e => new EventTrackingDto(
@@ -490,7 +487,7 @@ namespace PostalSystem.Api.Services
             // and that event happened at THIS warehouse.
             var warehouseId = postman.WarehouseId;
             
-            // Find events that are PW1 ro PR1 at this warehouse,
+            // Find events that are PW1 or PR1 at this warehouse,
             // AND ensure there is NO event for the same package with a later timestamp.
             var packages = await _context.Events
                 .Where(e => e.WarehouseId == warehouseId &&
@@ -513,7 +510,7 @@ namespace PostalSystem.Api.Services
             // Find events that are PP2 (picked up),
             // AND ensure there is NO event for the same package with a later timestamp.
             var packages = await _context.Events
-                .Where(e => (e.EventType.Code == "PP2") &&
+                .Where(e => e.EventType.Code == "PP2" &&
                             !_context.Events.Any(e2 => e2.PackageId == e.PackageId && e2.Timestamp > e.Timestamp))
                 .Select(e => new InventoryTrackingDto(
                     e.Package.TrackingGuid,
@@ -525,6 +522,87 @@ namespace PostalSystem.Api.Services
                 .ToListAsync();
 
             return new ServiceResult<List<InventoryTrackingDto>>(true, "In-transit packages list retrieved successfully!", packages);
+        }
+
+        public async Task<ServiceResult<List<InventoryTrackingDto>>> GetPickedUpPackagesAsync(int postmanId)
+        {
+            var postman = await _context.Postmen
+                .Include(p => p.Warehouse)
+                .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
+            
+            // Validate the postman and check if their home warehouse exists or not
+            if (postman == null || postman.Warehouse == null)
+            {
+                _logger.LogWarning("Inventory fetch failed: Active postman {PostmanId} not found.", postmanId);
+                return new ServiceResult<List<InventoryTrackingDto>>(false, "Active postman not found.");
+            }
+
+            // Validate if the postman's warehouse is active or not
+            if (!postman.Warehouse.IsActive)
+            {
+                _logger.LogWarning("Inventory fetch failed: Warehouse {WarehouseName} is inactive.", postman.Warehouse.WarehouseName);
+                return new ServiceResult<List<InventoryTrackingDto>>(false, "The assigned warehouse is currently inactive.");
+            }
+            
+            // Find events that are PP2, picked up by the current postman, in the destination city
+            // AND ensure there is NO event for the same package with a later timestamp.
+            var packages = await _context.Events
+                .Where(e => e.PostmanId == postmanId &&
+                            e.EventType.Code == "PP2" &&
+                            e.Package.FinalDestinationCityId == postman.Warehouse.CityId &&
+                            !_context.Events.Any(e2 => e2.PackageId == e.PackageId && e2.Timestamp > e.Timestamp))
+                .Select(e => new InventoryTrackingDto(
+                    e.Package.TrackingGuid,
+                    e.Package.FinalDestinationCityId,
+                    e.Package.DestinationAddress,
+                    e.Package.IsFlaggedAsFragile,
+                    e.Timestamp
+                ))
+                .ToListAsync();
+
+            return new ServiceResult<List<InventoryTrackingDto>>(true, "Postman inventory retrieved successfully!", packages);
+        }
+
+        public async Task<ServiceResult<List<InventoryTrackingDto>>> GetCancellablePackagesAsync(int postmanId)
+        {
+            var postman = await _context.Postmen
+                .Include(p => p.Warehouse)
+                .FirstOrDefaultAsync(p => p.PostmanId == postmanId && p.IsActive);
+            
+            // Validate the postman and check if their home warehouse exists or not
+            if (postman == null || postman.Warehouse == null)
+            {
+                _logger.LogWarning("Inventory fetch failed: Active postman {PostmanId} not found.", postmanId);
+                return new ServiceResult<List<InventoryTrackingDto>>(false, "Active postman not found.");
+            }
+
+            // Validate if the postman's warehouse is active or not
+            if (!postman.Warehouse.IsActive)
+            {
+                _logger.LogWarning("Inventory fetch failed: Warehouse {WarehouseName} is inactive.", postman.Warehouse.WarehouseName);
+                return new ServiceResult<List<InventoryTrackingDto>>(false, "The assigned warehouse is currently inactive.");
+            }
+
+            // Find packages where the LATEST event is 'In Warehouse' (PW1) or 'Registered' (PR1)
+            // and that event happened at THIS warehouse.
+            var warehouseId = postman.WarehouseId;
+            
+            // Find events that are PR1 at this warehouse,
+            // AND ensure there is NO event for the same package with a later timestamp.
+            var packages = await _context.Events
+                .Where(e => e.WarehouseId == warehouseId &&
+                            e.EventType.Code == "PR1" &&
+                            !_context.Events.Any(e2 => e2.PackageId == e.PackageId && e2.Timestamp > e.Timestamp))
+                .Select(e => new InventoryTrackingDto(
+                    e.Package.TrackingGuid,
+                    e.Package.FinalDestinationCityId,
+                    e.Package.DestinationAddress,
+                    e.Package.IsFlaggedAsFragile,
+                    e.Timestamp
+                ))
+                .ToListAsync();
+
+            return new ServiceResult<List<InventoryTrackingDto>>(true, "Packages which can be cancelled in this warehouse's inventory retrieved successfully!", packages);
         }
 
         private string GenerateEventDetails(string eventCode, string pName, string wName)

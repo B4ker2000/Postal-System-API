@@ -10,3 +10,5 @@ namespace PostalSystem.Api.Dtos
         string Details
     );
 }
+
+// SENIOR: Add CityName

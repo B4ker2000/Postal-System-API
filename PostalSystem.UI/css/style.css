@@ -67,7 +67,8 @@ input {
     transition: var(--transition);
 }
 
-input:focus {
+input:focus,
+select:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 8px var(--secondary-color);
@@ -237,12 +238,6 @@ button:hover {
     padding: 24px;
     box-shadow: 0 5px 15px var(--shadow);
     text-align: center;
-    cursor: pointer;
-}
-
-.action-card:hover {
-    transform: translateY(-2px);
-    transition: var(--transition);
 }
 
 .action-card p {

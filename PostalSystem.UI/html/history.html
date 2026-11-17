@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tracking History</title>
+        <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="../css/pickup.css">
+        <link rel="stylesheet" href="../css/history.css">
+    </head>
+    <body>
+        <div id="navbar-placeholder"></div>
+
+        <main class="main-container">
+            <div class="action-card tracking-history">
+                <h2>Track a package's History</h2>
+
+                <section class="manual-section">
+                    <h3>Enter the desired package GUID</h3>
+                    <div class="search-container">
+                        <label for="pickGuid">Tracking GUID:</label>
+                        <div class="form-group">
+                            <input type="text" id="pickGuid" placeholder="Enter Tracking GUID...">
+                            <button id="pickBtn">SEARCH</button>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="divider">
+
+                <section class="available-section">
+                    <h3>History Logs</h3>
+                    <div class="table-wrapper">
+                        <table class="package-table">
+                            <thead>
+                                <tr>
+                                    <th>Postman ID</th>
+                                    <th>Warehouse ID</th>
+                                    <th>Timestamp</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trackingHistoryList">
+                                <!-- Rows added via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                <div id="message"></div>
+            </div>
+        </main>
+
+        <script src="../js/api.js"></script>
+        <script src="../js/history.js"></script>
+    </body>
+</html>

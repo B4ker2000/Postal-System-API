@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let selectedGuid = null;
 
     // 1. Load picked up packages
-    async function loadPickedUpPackages() {
+    async function loadInTransitPackages() {
         try {
             // We call the endpoint that uses the X-Postman-Id header
             const packages = await apiGet('/packages/in-transit');
@@ -74,12 +74,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('.package-table tr').forEach(r => r.classList.remove('selected'));
 
             // Refresh the list since one package is now gone!
-            await loadPickedUpPackages();
+            await loadInTransitPackages();
         } catch (err) {
             messageDiv.innerHTML = `<span class="error-text">${err.message || 'Something went wrong!'}</span>`;
         }
     };
 
     // Initial load
-    await loadPickedUpPackages();
+    await loadInTransitPackages();
 });

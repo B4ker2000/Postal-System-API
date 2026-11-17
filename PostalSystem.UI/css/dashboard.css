@@ -3,6 +3,15 @@ body {
     padding: 20px;
 }
 
+.action-card {
+    cursor: pointer;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+    transition: var(--transition);
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -27,10 +36,6 @@ body {
     gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
-}
-
-.register-package {
-    width: 400px;
 }
 
 .history-container {
@@ -67,32 +72,4 @@ body {
 .history-item {
     padding: 8px;
     border-bottom: 1px solid var(--secondary-color); /* #333 */
-}
-
-.form-group.fragile {
-    display: flex; 
-    align-items: var(--text-dir); 
-    gap: 10px;
-    cursor: pointer;
-    width: fit-content;
-}
-
-.fragile-label input {
-    width: auto;
-}
-
-.fragile-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    user-select: none;
-    cursor: pointer;
-}
-
-.cancel-package button {
-    background-color: var(--cancel-btn);
-}
-
-.cancel-package button:hover {
-    background-color: var(--error); 
 }

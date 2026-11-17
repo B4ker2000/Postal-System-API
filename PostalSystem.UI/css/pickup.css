@@ -3,8 +3,42 @@ body {
     padding: 20px;
 }
 
-.pickup-package {
+.pickup-package,
+.deliver-package,
+.register-package {
     width: 500px;
+}
+
+.tracking-history {
+    width: 1000px;
+}
+
+.form-group.fragile {
+    display: flex; 
+    align-items: var(--text-dir); 
+    gap: 10px;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.fragile-label input {
+    width: auto;
+}
+
+.fragile-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.cancel-button {
+    background-color: var(--cancel-btn);
+}
+
+.cancel-button:hover {
+    background-color: var(--error);
 }
 
 .table-wrapper {
@@ -27,7 +61,7 @@ body {
     position: sticky;
     top: 0;
     padding: 10px;
-    text-align: start;
+    text-align: center;
 }
 
 .package-table td {

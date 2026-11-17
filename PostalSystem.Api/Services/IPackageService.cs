@@ -12,5 +12,7 @@ namespace PostalSystem.Api.Services
         Task<ServiceResult<List<EventTrackingDto>>> GetPackageHistoryAsync(Guid trackingGuid);
         Task<ServiceResult<List<InventoryTrackingDto>>> GetWarehouseInventoryAsync(int postmanId);
         Task<ServiceResult<List<InventoryTrackingDto>>> GetInTransitPackagesAsync();
+        Task<ServiceResult<List<InventoryTrackingDto>>> GetPickedUpPackagesAsync(int postmanId);
+        Task<ServiceResult<List<InventoryTrackingDto>>> GetCancellablePackagesAsync(int postmanId);
     }
 }
