@@ -127,5 +127,16 @@ namespace PostalSystem.Api.Controllers
 
             return Ok(result.Data);
         }
+
+        [HttpGet("in-transit")]
+        public async Task<IActionResult> GetInTransit()
+        {
+            var result = await _packageService.GetInTransitPackagesAsync();
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
+            return Ok(result.Data);
+        }
     }
 }

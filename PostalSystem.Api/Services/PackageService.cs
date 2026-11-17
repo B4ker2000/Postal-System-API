@@ -508,6 +508,25 @@ namespace PostalSystem.Api.Services
             return new ServiceResult<List<InventoryTrackingDto>>(true, "Warehouse inventory retrieved successfully!", packages);
         }
 
+        public async Task<ServiceResult<List<InventoryTrackingDto>>> GetInTransitPackagesAsync()
+        {
+            // Find events that are PP2 (picked up),
+            // AND ensure there is NO event for the same package with a later timestamp.
+            var packages = await _context.Events
+                .Where(e => (e.EventType.Code == "PP2") &&
+                            !_context.Events.Any(e2 => e2.PackageId == e.PackageId && e2.Timestamp > e.Timestamp))
+                .Select(e => new InventoryTrackingDto(
+                    e.Package.TrackingGuid,
+                    e.Package.FinalDestinationCityId,
+                    e.Package.DestinationAddress,
+                    e.Package.IsFlaggedAsFragile,
+                    e.Timestamp
+                ))
+                .ToListAsync();
+
+            return new ServiceResult<List<InventoryTrackingDto>>(true, "In-transit packages list retrieved successfully!", packages);
+        }
+
         private string GenerateEventDetails(string eventCode, string pName, string wName)
         {
             return eventCode switch

@@ -1,58 +1,53 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfer Package</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/transfer.css">
-</head>
-<body>
-    <div id="navbar-placeholder"></div>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Transfer Package</title>
+        <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="../css/transfer.css">
+        <link rel="stylesheet" href="../css/pickup.css">
+    </head>
+    <body>
+        <div id="navbar-placeholder"></div>
 
-    <main class="container">
-        <div class="page-header">
-            <h1 data-i18n="transfer_title">Transfer Package to your Warehouse</h1>
-            <p data-i18n="transfer_subtitle">Accept packages into your assigned warehouse.</p>
-        </div>
+        <main class="main-container">
+            <div class="action-card transfer-package">
+                <h2>Transfer Packages to Your Warehouse</h2>
 
-        <section class="action-card">
-            <div class="input-group">
-                <input type="text" id="trackingGuid" placeholder="Enter Tracking GUID..." />
-                <button id="transferBtn">
-                    <span data-i18n="btn_transfer">Transfer Package</span>
-                </button>
+                <section class="available-section">
+                    <h3>Available in Your Warehouse</h3>
+                    <div class="table-wrapper">
+                        <table class="package-table">
+                            <thead>
+                                <tr>
+                                    <th>Tracking GUID</th>
+                                    <th>Destination</th>
+                                    <th>Fragile</th>
+                                </tr>
+                            </thead>
+                            <tbody id="availablePackagesList">
+                                <!-- Rows added via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <hr class="divider">
+
+                <section class="manual-section">
+                    <h3>Manual Entry</h3>
+                    <div class="form-group">
+                        <label for="pickGuid">Tracking GUID</label>
+                        <input type="text" id="pickGuid" placeholder="Enter Tracking GUID...">
+                    </div>
+                    <button id="pickBtn">TRANSFER UP</button>
+                </section>
+                <div id="message"></div>
             </div>
-        </section>
+        </main>
 
-        <section class="inventory-section">
-            <h2 data-i18n="my_packages_title">Packages in My Possession</h2>
-            <div class="table-container">
-                <table id="myPackagesTable">
-                    <thead>
-                        <tr>
-                            <th data-i18n="th_guid">Tracking GUID</th>
-                            <th data-i18n="th_address">Destination</th>
-                            <th data-i18n="th_fragile">Fragile</th>
-                            <th data-i18n="th_action">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows added via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <script src="../js/api.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/transfer.js"></script>
-    <script>
-        window.onload = () => {
-            loadNavbar();
-            initTransferPage();
-        };
-    </script>
-</body>
+        <script src="../js/api.js"></script>
+        <script src="../js/transfer.js"></script>
+    </body>
 </html>

@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Postman Dashboard - Postal Terminal</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
-</head>
-<body>
-    <div id="navbar-placeholder"></div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Postman Dashboard - Postal Terminal</title>
+        <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="../css/dashboard.css">
+    </head>
+    <body>
+        <div id="navbar-placeholder"></div>
 
-    <div class="dashboard-grid">
-        <div class="action-card" onclick="window.location.href='register.html'">
-            <h2>Register Package</h2>
-            <p>Start a new shipment and generate a tracking ID.</p>
-            <button>GO TO REGISTRATION</button>
-        </div>
+        <main class="dashboard-grid">
+            <div class="action-card" onclick="window.location.href='register.html'">
+                <h2>Register Package</h2>
+                <p>Start a new shipment and generate a tracking ID.</p>
+                <button>GO TO REGISTRATION</button>
+            </div>
 
-        <div class="action-card" onclick="window.location.href='pickup.html'">
-            <h2>Pickup Package</h2>
-            <p>Assign a package from the warehouse to yourself.</p>
-            <button>PICK UP NOW</button>
-        </div>
+            <div class="action-card" onclick="window.location.href='pickup.html'">
+                <h2>Pickup Package</h2>
+                <p>Assign a package from the warehouse to yourself.</p>
+                <button>PICK UP NOW</button>
+            </div>
 
-        <div class="action-card" onclick="window.location.href='transfer.html'">
-            <h2>Transfer Package</h2>
-            <p>Accept a package into your current warehouse.</p>
-            <button>TRANSFER NOW</button>
-        </div>
+            <div class="action-card" onclick="window.location.href='transfer.html'">
+                <h2>Transfer Package</h2>
+                <p>Accept a package into your current warehouse.</p>
+                <button>TRANSFER NOW</button>
+            </div>
 
-        <div class="action-card" onclick="window.location.href='confirm.html'">
-            <h2>Confirm Delivery</h2>
-            <p>Mark a package as delivered using the OTP code.</p>
-            <button>CONFIRM DELIVERY</button>
-        </div>
+            <div class="action-card" onclick="window.location.href='confirm.html'">
+                <h2>Confirm Delivery</h2>
+                <p>Mark a package as delivered using the OTP code.</p>
+                <button>CONFIRM DELIVERY</button>
+            </div>
 
-        <div class="action-card" onclick="window.location.href='cancel.html'">
-            <h2>Cancel Package</h2>
-            <p>Flag a package as canceled in the system.</p>
-            <button>CANCEL PACKAGE</button>
-        </div>
+            <div class="action-card" onclick="window.location.href='cancel.html'">
+                <h2>Cancel Package</h2>
+                <p>Flag a package as canceled in the system.</p>
+                <button>CANCEL PACKAGE</button>
+            </div>
 
-        <div class="action-card" onclick="window.location.href='history.html'">
-            <h2>Tracking History</h2>
-            <p>Search for a package to see its full audit trail.</p>
-            <button>SEARCH HISTORY</button>
-        </div>
-    </div>
+            <div class="action-card" onclick="window.location.href='history.html'">
+                <h2>Tracking History</h2>
+                <p>Search for a package to see its full audit trail.</p>
+                <button>SEARCH HISTORY</button>
+            </div>
+        </main>
 
-    <script src="../js/api.js"></script>
-    <script src="../js/dashboard.js"></script>
-</body>
+        <script src="../js/api.js"></script>
+        <script src="../js/dashboard.js"></script>
+    </body>
 </html>

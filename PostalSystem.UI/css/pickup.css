@@ -7,10 +7,6 @@ body {
     width: 500px;
 }
 
-.available-section {
-    margin-bottom: 30px;
-}
-
 .table-wrapper {
     max-height: 250px;
     overflow-y: auto;
@@ -42,7 +38,7 @@ body {
 
 .package-table tr:hover td {
     background: var(--secondary-color);
-    /* color: white; */
+    color: var(--accent);
 }
 
 .package-table tr.selected td {
@@ -55,10 +51,4 @@ body {
     border: 0;
     border-top: 2px solid var(--primary-color);
     margin: 20px 0;
-}
-
-.manual-section h3 {
-    color: var(--text-muted);
-    font-size: 16px;
-    margin-bottom: 15px;
 }
