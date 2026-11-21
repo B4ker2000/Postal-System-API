@@ -4,7 +4,7 @@ namespace PostalSystem.Api.Services
 {
     public interface IPackageService
     {
-        Task<ServiceResult> RegisterPackageAsync(RegisterPackageRequest dto, int postmanId);
+        Task<ServiceResult<RegisterPackageResponse>> RegisterPackageAsync(RegisterPackageRequest dto, int postmanId);
         Task<ServiceResult> PickupPackageAsync(GuidRequest Guid, int postmanId);
         Task<ServiceResult> TransferPackageAsync(GuidRequest Guid, int postmanId);
         Task<ServiceResult> ConfirmDeliveryAsync(ConfirmDeliveryRequest request, int postmanId);

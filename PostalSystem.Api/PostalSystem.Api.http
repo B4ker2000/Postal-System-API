@@ -1,6 +1,6 @@
-@PostalSystem.Api_HostAddress = http://localhost:5176
+@ApiHostAddress = http://localhost:5176
 
-GET {{PostalSystem.Api_HostAddress}}/weatherforecast/
+GET {{ApiHostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

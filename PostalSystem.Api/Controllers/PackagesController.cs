@@ -82,24 +82,13 @@ namespace PostalSystem.Api.Controllers
             return Ok(new { message = result.Message });
         }
 
-        [HttpGet("history/{trackingGuid}")] // SENIOR: swap it to `{trackingGuid}/history`
+        [HttpGet("{trackingGuid}/history")]
         public async Task<IActionResult> GetHistory(Guid trackingGuid)
         {
             var result = await _packageService.GetPackageHistoryAsync(trackingGuid);
 
             if (!result.IsSuccess)
                 return NotFound(new { message = result.Message });
-
-            return Ok(result.Data);
-        }
-
-        [HttpGet("available-in-warehouse/{warehouseId}")] // SENIOR: Isn't this unneccessary?
-        public async Task<IActionResult> GetAvailableInWarehouse(int warehouseId)
-        {
-            var result = await _packageService.GetWarehouseInventoryAsync(warehouseId);
-
-            if (!result.IsSuccess)
-                return BadRequest(new { message = result.Message });
 
             return Ok(result.Data);
         }
@@ -115,7 +104,7 @@ namespace PostalSystem.Api.Controllers
             return Ok(result.Data);
         }
 
-        [HttpGet("in-transit")] // SENIOR: This should also get the postman id and check if it's null or not!
+        [HttpGet("in-transit")]
         public async Task<IActionResult> GetInTransit()
         {
             var result = await _packageService.GetInTransitPackagesAsync();
