@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Postman Dashboard - Postal Terminal</title>
+        <title data-i18n="dashboard_title">Postman Dashboard - Postal Terminal</title>
         <link rel="stylesheet" href="../css/style.css">
         <link rel="stylesheet" href="../css/dashboard.css">
     </head>
@@ -12,43 +12,48 @@
 
         <main class="dashboard-grid">
             <div class="action-card" onclick="window.location.href='register.html'">
-                <h2>Register Package</h2>
-                <p>Start a new shipment and generate a tracking ID.</p>
-                <button>GO TO REGISTRATION</button>
+                <h2 data-i18n="dashboard_reg_title">Register Package</h2>
+                <p data-i18n="dashboard_reg_desc">Start a new shipment and generate a tracking ID.</p>
+                <button data-i18n="dashboard_reg_btn">GO TO REGISTRATION</button>
             </div>
 
             <div class="action-card" onclick="window.location.href='pickup.html'">
-                <h2>Pickup Package</h2>
-                <p>Assign a package from the warehouse to yourself.</p>
-                <button>PICK UP NOW</button>
+                <h2 data-i18n="dashboard_pickup_title">Pickup Package</h2>
+                <p data-i18n="dashboard_pickup_desc">Assign a package from the warehouse to yourself.</p>
+                <button data-i18n="dashboard_pickup_btn">PICK UP NOW</button>
             </div>
 
             <div class="action-card" onclick="window.location.href='transfer.html'">
-                <h2>Transfer Package</h2>
-                <p>Accept a package into your current warehouse.</p>
-                <button>TRANSFER NOW</button>
+                <h2 data-i18n="dashboard_transfer_title">Transfer Package</h2>
+                <p data-i18n="dashboard_transfer_desc">Accept a package into your current warehouse.</p>
+                <button data-i18n="dashboard_transfer_btn">TRANSFER NOW</button>
             </div>
 
             <div class="action-card" onclick="window.location.href='deliver.html'">
-                <h2>Confirm Delivery</h2>
-                <p>Mark a package as delivered using the OTP code.</p>
-                <button>CONFIRM DELIVERY</button>
+                <h2 data-i18n="dashboard_deliver_title">Confirm Delivery</h2>
+                <p data-i18n="dashboard_deliver_desc">Mark a package as delivered using the OTP code.</p>
+                <button data-i18n="dashboard_deliver_btn">CONFIRM DELIVERY</button>
             </div>
 
             <div class="action-card" onclick="window.location.href='cancel.html'">
-                <h2>Cancel Package</h2>
-                <p>Flag a package as canceled in the system.</p>
-                <button>CANCEL PACKAGE</button>
+                <h2 data-i18n="dashboard_cancel_title">Cancel Package</h2>
+                <p data-i18n="dashboard_cancel_desc">Flag a package as canceled in the system.</p>
+                <button data-i18n="dashboard_cancel_btn">CANCEL PACKAGE</button>
             </div>
 
             <div class="action-card" onclick="window.location.href='history.html'">
-                <h2>Tracking History</h2>
-                <p>Search for a package to see its full audit trail.</p>
-                <button>SEARCH HISTORY</button>
+                <h2 data-i18n="dashboard_history_title">Tracking History</h2>
+                <p data-i18n="dashboard_history_desc">Search for a package to see its full audit trail.</p>
+                <button data-i18n="dashboard_history_btn">SEARCH HISTORY</button>
             </div>
         </main>
 
+        <script src="../js/i18n.js"></script>
         <script src="../js/api.js"></script>
         <script src="../js/dashboard.js"></script>
+        <script>
+            // Call this immediately so the page translates before the user sees the default English
+            initLanguage();
+        </script>
     </body>
 </html>

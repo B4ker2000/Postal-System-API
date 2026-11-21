@@ -21,10 +21,20 @@ async function loadNavbar() {
         
         const langToggle = document.getElementById('langToggle');
         if (langToggle) {
-            langToggle.onclick = () => {
+            langToggle.addEventListener('click', () => {
+                const currentLang = sessionStorage.getItem('preferredLang') || 'en';
+                const newLang = currentLang === 'en' ? 'fa' : 'en';
+
+                updateLanguage(newLang);
+
+                // Update button text to show the opposite language
+                langToggle.textContent = newLang === 'en' ? 'FA' : 'EN';
                 console.log("Quack! Language toggled.");
-                // Implement toggleLanguage() logic here or in a separate UI file
-            };
+            });
+
+            // Set initial button text based on current language
+            const initialLang = sessionStorage.getItem('preferredLang') || 'en';
+            langToggle.textContent = initialLang === 'en' ? 'FA' : 'EN';
         }
         
         const backBtn = document.getElementById('backBtn');
@@ -41,6 +51,8 @@ async function loadNavbar() {
     } catch (err) {
         console.error("Quack! Failed to load navbar:", err);
     }
+    
+    updateLanguage(sessionStorage.getItem('preferredLang') || 'en');
 }
 
 async function apiRequest(endpoint, options = {}) {

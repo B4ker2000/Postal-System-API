@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Register Package - Postal Terminal</title>
+        <title data-i18n="reg_page_title">Register Package - Postal Terminal</title>
         <link rel="stylesheet" href="../css/style.css">
         <link rel="stylesheet" href="../css/pickup.css">
         <link rel="stylesheet" href="../css/register.css">
@@ -13,33 +13,37 @@
 
         <main class="main-container">
             <div class="action-card register-package">
-                <h2>Register New Packages</h2>
+                <h2 data-i18n="reg_form_header">Register New Packages</h2>
 
                 <div class="form-group">
-                    <label for="regDestCitySelect">Destination City</label>
+                    <label for="regDestCitySelect" data-i18n="reg_city_label">Destination City</label>
                     <select id="regDestCitySelect" class="form-control">
-                        <option value="">-- Select Destination City --</option>
+                        <option value="" data-i18n="reg_city_placeholder">-- Select Destination City --</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="regAddress">Destination Address</label>
-                    <input type="text" id="regAddress" placeholder="Street, House №, Apartment...">
+                    <label for="regAddress" data-i18n="reg_addr_label">Destination Address</label>
+                    <input type="text" id="regAddress" data-i18n-placeholder="reg_addr_placeholder" placeholder="Street, House №, Apartment...">
                 </div>
 
                 <div class="form-group fragile">
                     <label for="regFragile" class="fragile-label">
                         <input type="checkbox" id="regFragile">
-                        <span>Fragile Package</span>
+                        <span data-i18n="reg_fragile_label">Fragile Package</span>
                     </label>
                 </div>
 
-                <button id="regBtn">Register Package</button>
+                <button id="regBtn" data-i18n="reg_submit_btn">Register Package</button>
                 <div id="message"></div>
             </div>
         </main>
 
+        <script src="../js/i18n.js"></script>
         <script src="../js/api.js"></script>
         <script src="../js/register.js"></script>
+        <script>
+            initLanguage();
+        </script>
     </body>
 </html>
