@@ -13,17 +13,17 @@
 
         <main class="main-container">
             <div class="action-card transfer-package">
-                <h2>Transfer Packages to Your Warehouse</h2>
+                <h2 data-i18n="transfer_page_title">Transfer Packages to Your Warehouse</h2>
 
                 <section class="available-section">
-                    <h3>Available to Transfer to Your Warehouse</h3>
+                    <h3 data-i18n="transfer_avail_title">Available to Transfer to Your Warehouse</h3>
                     <div class="table-wrapper">
                         <table class="package-table">
                             <thead>
                                 <tr>
-                                    <th>Tracking GUID</th>
-                                    <th>Destination</th>
-                                    <th>Fragile</th>
+                                    <th data-i18n="col_guid">Tracking GUID</th>
+                                    <th data-i18n="col_dest">Destination</th>
+                                    <th data-i18n="col_fragile">Fragile</th>
                                 </tr>
                             </thead>
                             <tbody id="availablePackagesList">
@@ -36,18 +36,19 @@
                 <hr class="divider">
 
                 <section class="manual-section">
-                    <h3>Manual Entry</h3>
+                    <h3 data-i18n="manual_header">Manual Entry</h3>
                     <div class="form-group">
-                        <label for="pickGuid">Tracking GUID</label>
-                        <input type="text" id="pickGuid" placeholder="Enter Tracking GUID...">
+                        <label for="pickGuid" data-i18n="manual_guid_label">Tracking GUID</label>
+                        <input type="text" id="pickGuid" data-i18n-placeholder="manual_guid_placeholder" placeholder="Enter Tracking GUID...">
                     </div>
-                    <button id="pickBtn">TRANSFER</button>
+                    <button id="pickBtn" data-i18n="transfer_submit_btn">TRANSFER</button>
                 </section>
                 <div id="message"></div>
             </div>
         </main>
 
         <script src="../js/api.js"></script>
+        <script src="../js/i18n.js"></script>
         <script src="../js/transfer.js"></script>
     </body>
 </html>

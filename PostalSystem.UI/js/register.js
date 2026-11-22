@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // Inject the language first and then the navbar! 
-    initLanguage();
+    initLanguage()
     await loadNavbar();
 
     const citySelect = document.getElementById('regDestCitySelect');

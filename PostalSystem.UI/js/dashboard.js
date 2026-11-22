@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // Load the shared navigation bar. Quack!
+    // Load the language and then the shared navigation bar. Quack!
+    initLanguage();
     await loadNavbar();
-    await initLanguage();
 });

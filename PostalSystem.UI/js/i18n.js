@@ -22,7 +22,7 @@ const translations = {
         dashboard_history_title: "Tracking History",
         dashboard_history_desc: "Search for a package to see its full audit trail.",
         dashboard_history_btn: "SEARCH HISTORY",
-        reg_title: "Register Package",
+        reg_page_title: "Register Package",
         reg_form_header: "Register New Packages",
         reg_city_label: "Destination City",
         reg_city_placeholder: "-- Select Destination City --",
@@ -37,6 +37,27 @@ const translations = {
         reg_otp: "OTP:",
         reg_view_history: "View Tracking History",
         reg_err_generic: "Something went wrong!",
+        pickup_page_title: "Pickup Package",
+        pickup_form_header: "Pickup Packages from Your Warehouse",
+        pickup_avail_header: "Available in Your Warehouse",
+        pickup_submit_btn: "PICK UP",
+        pickup_no_pkgs: "No packages available in your warehouse.",
+        pickup_success: "Package picked up successfully! Quack!",
+        col_guid: "Tracking GUID",
+        col_dest: "Destination",
+        col_fragile: "Fragile",
+        manual_header: "Manual Entry",
+        manual_guid_label: "Tracking GUID",
+        manual_guid_placeholder: "Enter Tracking GUID...",
+        err_inventory: "Failed to load inventory.",
+        err_required: "Please select a package or enter a GUID!",
+        fragile_yes: "⚠️ Yes",
+        fragile_no: "No",
+        transfer_page_title: "Transfer Packages to Your Warehouse",
+        transfer_avail_title: "Available to Transfer to Your Warehouse",
+        transfer_submit_btn: "TRANSFER",
+        transfer_success: "Package transferred successfully! Quack!",
+        transit_no_pkgs: "No packages currently in transit.",
         // More to be added
     },
     fa: {
@@ -77,6 +98,27 @@ const translations = {
         reg_otp: "کد تایید (OTP):",
         reg_view_history: "مشاهده تاریخچه رهگیری",
         reg_err_generic: "خطایی رخ داد!",
+        pickup_page_title: "تحویل گرفتن بسته",
+        pickup_form_header: "تحویل گرفتن بسته‌ها از انبار شما",
+        pickup_avail_header: "موجود در انبار شما",
+        pickup_submit_btn: "تحویل بگیر",
+        pickup_no_pkgs: "هیچ بسته‌ای در انبار شما موجود نیست.",
+        pickup_success: "بسته با موفقیت تحویل گرفته شد! کواک!",
+        col_guid: "کد رهگیری",
+        col_dest: "مقصد",
+        col_fragile: "شکستنی",
+        manual_header: "ورود دستی",
+        manual_guid_label: "کد رهگیری",
+        manual_guid_placeholder: "کد رهگیری را وارد کنید...",
+        err_inventory: "بارگذاری موجودی با خطا مواجه شد.",
+        err_required: "لطفاً یک بسته را انتخاب کنید یا کد رهگیری را وارد نمایید!",
+        fragile_yes: "⚠️ بله",
+        fragile_no: "خیر",
+        transfer_page_title: "انتقال بسته‌ها به انبار شما",
+        transfer_avail_title: "بسته‌های موجود برای انتقال به انبار شما",
+        transfer_submit_btn: "انتقال",
+        transfer_success: "بسته با موفقیت منتقل شد!",
+        transit_no_pkgs: "در حال حاضر هیچ بسته‌ای در مسیر نیست.",
         // More to be added
     }
 };
@@ -105,6 +147,13 @@ function updateLanguage(lang) {
         if (translations[lang][key]) {
             el.placeholder = translations[lang][key];
         }
+    });
+
+    // 5. Handle dynamic fragile cells! (might be expanded upon later if there were other dynamic table texts!)
+    const fragileCells = document.querySelectorAll('.fragile-cell');
+    fragileCells.forEach(cell => {
+        const isFragile = cell.getAttribute('data-fragile') === 'true';
+        cell.textContent = isFragile ? translations[lang].fragile_yes : translations[lang].fragile_no;
     });
 }
 
