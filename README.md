@@ -87,33 +87,33 @@ VALUES (1, N'Борис Михайлович Чернов', '+7-912-345-67-89', 
 
 ### Backend
 
-- 1. Clone the repository.
-- 2. Update the `DefaultConnection` string in `appsettings.json` to point to your SQL Server instance.
-- 3. Run the migrations to create the database:
+1. Clone the repository.
+2. Update the `DefaultConnection` string in `appsettings.json` to point to your SQL Server instance.
+3. Run the migrations to create the database:
 ```bash
 dotnet ef database update
 ```
-- 4. Start the API:
+4. Start the API:
 ```bash
 dotnet run --project src/PostalSystem.Api
 ```
 
 ### Frontend
 
-- 1. Navigate to the `PostalSystem.UI` folder.
-- 2. Open `index.html` in any modern web browser (or use a Live Server extension).
+1. Navigate to the `PostalSystem.UI` folder.
+2. Open `index.html` in any modern web browser (or use a Live Server extension).
 
 ---
 
 ## 🛣️ API Workflow
 
-- 1. **Authentication:** Postmen login with Name and Phone. The `PostmanId` is then passed via the `X-Postman-Id` request header in all subsequent calls.
-- 2. **Registration:** A package is registered with a destination city and address. The system generates a `TrackingGuid` and an `OTP`.
-- 3. **Pickup:** A postman picks up a package from their assigned warehouse.
-- 4. **Transfer:** A postman at a different warehouse "accepts" the package into their facility.
-- 5. **Delivery:** The postman enters the OTP to mark the package as delivered.
-- 6. **Cancel:** Postmen can also cancel packages that were just created.
-- 7. **Tracking:** Additionaly postmen can look up all the events of a package using that package's unique `TrackingGuid`.
+1. **Authentication:** Postmen login with Name and Phone. The `PostmanId` is then passed via the `X-Postman-Id` request header in all subsequent calls.
+2. **Registration:** A package is registered with a destination city and address. The system generates a `TrackingGuid` and an `OTP`.
+3. **Pickup:** A postman picks up a package from their assigned warehouse.
+4. **Transfer:** A postman at a different warehouse "accepts" the package into their facility.
+5. **Delivery:** The postman enters the OTP to mark the package as delivered.
+6. **Cancel:** Postmen can also cancel packages that were just created.
+7. **Tracking:** Additionaly postmen can look up all the events of a package using that package's unique `TrackingGuid`.
 
 ---
 
