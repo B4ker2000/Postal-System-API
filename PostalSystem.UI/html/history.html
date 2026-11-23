@@ -5,23 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Tracking History</title>
         <link rel="stylesheet" href="../css/style.css">
-        <link rel="stylesheet" href="../css/pickup.css">
         <link rel="stylesheet" href="../css/history.css">
     </head>
-    <body>
+    <body class="action-page">
         <div id="navbar-placeholder"></div>
 
         <main class="main-container">
             <div class="action-card tracking-history">
-                <h2>Track a package's History</h2>
+                <h2 data-i18n="history_page_title">Track a package's History</h2>
 
                 <section class="manual-section">
-                    <h3>Enter the desired package GUID</h3>
+                    <h3 data-i18n="history_search_label">Enter the desired package GUID</h3>
                     <div class="search-container">
-                        <label for="pickGuid">Tracking GUID:</label>
+                        <label for="pickGuid" data-i18n="manual_guid_label">Tracking GUID:</label>
                         <div class="form-group">
-                            <input type="text" id="pickGuid" placeholder="Enter Tracking GUID...">
-                            <button id="pickBtn">SEARCH</button>
+                            <input type="text" id="pickGuid" data-i18n-placeholder="manual_guid_placeholder" placeholder="Enter Tracking GUID...">
+                            <button id="pickBtn" data-i18n="history_search_btn">SEARCH</button>
                         </div>
                     </div>
                 </section>
@@ -29,16 +28,16 @@
                 <hr class="divider">
 
                 <section class="available-section">
-                    <h3>History Logs</h3>
+                    <h3 data-i18n="history_logs_header">History Logs</h3>
                     <div class="table-wrapper">
                         <table class="package-table">
                             <thead>
                                 <tr>
-                                    <th>Postman</th>
-                                    <th>Warehouse</th>
-                                    <th>City Name</th>
-                                    <th>Timestamp</th>
-                                    <th>Details</th>
+                                    <th data-i18n="col_postman">Postman</th>
+                                    <th data-i18n="col_warehouse">Warehouse</th>
+                                    <th data-i18n="col_city">City Name</th>
+                                    <th data-i18n="col_timestamp">Timestamp</th>
+                                    <th data-i18n="col_details">Details</th>
                                 </tr>
                             </thead>
                             <tbody id="trackingHistoryList">
@@ -52,6 +51,7 @@
         </main>
 
         <script src="../js/api.js"></script>
+        <script src="../js/i18n.js"></script>
         <script src="../js/history.js"></script>
     </body>
 </html>

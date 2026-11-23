@@ -5,22 +5,27 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Postal System - Login</title>
         <link rel="stylesheet" href="../css/style.css">
+        <link rel="stylesheet" href="../css/auth.css">
     </head>
     <body>
         <main class="card">
-            <h1>LOGIN</h1>
+            <div class="nav-right">
+                <button class="lang-toggle" id="langToggle">FA</button>
+            </div>
+            <h1 data-i18n="login_title">LOGIN</h1>
             <div class="form-group">
-                <label for="name">Postman Name</label>
-                <input type="text" id="name" placeholder="Enter your name...">
+                <label for="name" data-i18n="login_label_name">Postman Name</label>
+                <input type="text" id="name" data-i18n-placeholder="login_placeholder_name" placeholder="Enter your name...">
             </div>
             <div class="form-group">
-                <label for="phone">Phone Number</label>
-                <input type="text" id="phone" placeholder="Enter your phone...">
+                <label for="phone" data-i18n="login_label_phone">Phone Number</label>
+                <input type="text" id="phone" data-i18n-placeholder="login_placeholder_phone" placeholder="Enter your phone...">
             </div>
-            <button id="loginBtn">SIGN IN</button>
+            <button id="loginBtn" data-i18n="login_btn">SIGN IN</button>
             <div id="message"></div>
         </main>
 
+        <script src="../js/i18n.js"></script>
         <script src="../js/auth.js"></script>
     </body>
 </html>

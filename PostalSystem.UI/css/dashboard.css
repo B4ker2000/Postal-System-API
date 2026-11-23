@@ -12,64 +12,10 @@ body {
     transition: var(--transition);
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto 30px auto;
-    padding: 0 20px;
-    box-sizing: border-box;
-    border-bottom: 2px solid var(--primary-color);
-}
-
-.user-info {
-    font-size: 30px;
-    font-weight: bold;
-    margin-top: 24px;
-}
-
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
-}
-
-.history-container {
-    grid-column: 1 / -1; /* Makes this container have full width! */
-    margin-top: 20px;
-}
-
-.history-container .input-group {
-    display: flex; 
-    gap: 10px;
-}
-
-.history-container .input-group input {
-    flex: 1;
-}
-
-.history-container .input-group button {
-    width: auto; 
-    margin: 0;
-}
-
-.history-list {
-    margin-top: 15px;
-    color: var(--text-main);
-    font-size: 14px;
-    max-height: 300px;
-    overflow-y: auto;
-    background: var(--bg-color);
-    padding: 10px;
-    border-radius: var(--radius);
-    border: 1px solid var(--primary-color);
-}
-
-.history-item {
-    padding: 8px;
-    border-bottom: 1px solid var(--secondary-color); /* #333 */
 }

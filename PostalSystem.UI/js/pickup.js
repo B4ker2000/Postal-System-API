@@ -9,12 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let selectedGuid = null;
 
-    // Helper to get current language string from dictionary
-    const t = (key) => {
-        const lang = sessionStorage.getItem('preferredLang') || 'en';
-        return translations[lang][key] || key;
-    };
-
     // 1. Load available packages for the current postman
     async function loadInventory() {
         try {
@@ -36,7 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 row.innerHTML = `
                     <td>${pkg.trackingGuid}</td>
                     <td>${pkg.destinationAddress}</td>
-                    <td class="fragile-cell" data-fragile="${pkg.isFlaggedAsFragile}">${pkg.isFlaggedAsFragile ? t('fragile_yes') : t('fragile_no')}</td>
+                    <td class="fragile-cell" data-fragile="${pkg.isFlaggedAsFragile}">
+                        ${pkg.isFlaggedAsFragile ? t('fragile_yes') : t('fragile_no')}
+                    </td>
                 `;
                 
                 // When a row is clicked, highlight it and fill the input field

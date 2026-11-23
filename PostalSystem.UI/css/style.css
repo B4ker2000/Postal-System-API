@@ -17,7 +17,6 @@
 
     --primary-font: 'Book Antiqua', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --secondary-font: 'Bookman Old Style', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    --text-dir: left;   /* temp */
 }
 
 body {
@@ -187,48 +186,16 @@ button:hover {
     width: 100%;
 }
 
-.page-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 80px);
-    padding: 20px;
-}
-
-.form-card {
-    background-color: var(--bg-card);
-    padding: 40px;
-    border-radius: var(--radius);
-    box-shadow: 0 10px 30px var(--shadow);
-    width: 100%;
-    max-width: 500px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
-}
-
-.form-card h2 {
-    color: var(--accent);
-    text-align: center;
-    margin-bottom: 30px;
-    font-family: var(--primary-font);
-}
-
 .form-group {
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    text-align: var(--text-dir);
+    text-align: start;
 }
 
 .form-group.fragile {
     margin-bottom: 0;
-}
-
-.checkbox-group {
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
 }
 
 .action-card {
@@ -264,4 +231,86 @@ button:hover {
     color: var(--text-muted);
     font-size: 16px;
     margin-bottom: 15px;
+}
+
+.cancel-package,
+.pickup-package,
+.deliver-package,
+.register-package,
+.transfer-package {
+    width: 500px;
+}
+
+.tracking-history {
+    width: 1000px;
+}
+
+.form-group.fragile {
+    display: flex; 
+    gap: 10px;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.fragile-label input {
+    width: auto;
+}
+
+.fragile-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.table-wrapper {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid var(--primary-color);
+    border-radius: var(--radius);
+    background: var(--bg-color);
+}
+
+.package-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.package-table th {
+    background: var(--primary-color);
+    color: var(--accent);
+    position: sticky;
+    top: 0;
+    padding: 10px;
+    text-align: center;
+}
+
+.package-table td {
+    padding: 10px;
+    border-bottom: 1px solid var(--primary-color);
+    cursor: pointer;
+}
+
+.package-table tr:hover td {
+    background: var(--secondary-color);
+    color: var(--accent);
+}
+
+.package-table tr.selected td {
+    background: var(--accent) !important;
+    color: var(--bg-color) !important;
+    font-weight: bold;
+}
+
+.divider {
+    border: 0;
+    border-top: 2px solid var(--primary-color);
+    margin: 20px 0;
+}
+
+.action-page {
+    display: block;
+    padding: 20px;
 }

@@ -5,25 +5,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Cancel Package</title>
         <link rel="stylesheet" href="../css/style.css">
-        <link rel="stylesheet" href="../css/pickup.css">
-        <!-- <link rel="stylesheet" href="../css/cancel.css"> -->
+        <link rel="stylesheet" href="../css/cancel.css">
     </head>
-    <body>
+    <body class="action-page">
         <div id="navbar-placeholder"></div>
 
         <main class="main-container">
             <div class="action-card cancel-package">
-                <h2>Cancel Packages Which were Registered at Your Warehouse</h2>
+                <h2 data-i18n="cancel_page_title">Cancel Packages Which were Registered at Your Warehouse</h2>
 
                 <section class="available-section">
-                    <h3>Packages Which can be Cancelled</h3>
+                    <h3 data-i18n="cancel_avail_header">Packages Which can be Cancelled</h3>
                     <div class="table-wrapper">
                         <table class="package-table">
                             <thead>
                                 <tr>
-                                    <th>Tracking GUID</th>
-                                    <th>Destination</th>
-                                    <th>Fragile</th>
+                                    <th data-i18n="col_guid">Tracking GUID</th>
+                                    <th data-i18n="col_dest">Destination</th>
+                                    <th data-i18n="col_fragile">Fragile</th>
                                 </tr>
                             </thead>
                             <tbody id="availablePackagesList">
@@ -36,18 +35,19 @@
                 <hr class="divider">
 
                 <section class="manual-section">
-                    <h3>Manual Entry</h3>
+                    <h3 data-i18n="manual_header">Manual Entry</h3>
                     <div class="form-group">
-                        <label for="pickGuid">Tracking GUID</label>
-                        <input type="text" id="pickGuid" placeholder="Enter Tracking GUID...">
+                        <label for="pickGuid" data-i18n="manual_guid_label">Tracking GUID</label>
+                        <input type="text" id="pickGuid" data-i18n-placeholder="manual_guid_placeholder" placeholder="Enter Tracking GUID...">
                     </div>
-                    <button class="cancel-button" id="pickBtn">CANCEL THIS PACKAGE</button>
+                    <button class="cancel-button" id="pickBtn" data-i18n="cancel_submit_btn">CANCEL THIS PACKAGE</button>
                 </section>
                 <div id="message"></div>
             </div>
         </main>
 
         <script src="../js/api.js"></script>
+        <script src="../js/i18n.js"></script>
         <script src="../js/cancel.js"></script>
     </body>
 </html>

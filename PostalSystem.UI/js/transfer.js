@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             // We call the endpoint that uses the X-Postman-Id header
             const packages = await apiGet('/packages/in-transit');
-
             availableList.innerHTML = ''; // Clear current list
 
             if (packages.length === 0) {
