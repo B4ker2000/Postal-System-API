@@ -133,3 +133,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 - *B4ker2000*
+
+## 🗒️ Notes
+
+This project took 13 days in total to create the core functions, and another 3 days to add localization and more polish to it overall! 
+
+**Special thanks** to my Seniors for tolerating me and giving me the original idea!
+
+I'd appreciate any feedback and bug reports you've got! ***Thanks for taking a look at my project!!!***
