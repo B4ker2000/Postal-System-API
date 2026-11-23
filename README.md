@@ -79,10 +79,10 @@ INSERT INTO Postmen (WarehouseId, Name, Phone, IsActive)
 VALUES (1, N'سعید آذری', '0914-655-9855', 1);
 
 INSERT INTO Postmen (WarehouseId, Name, Phone, IsActive)
-VALUES (1, N'鳩凛', '03-1234-5678', 2);
+VALUES (1, '鳩凛', '03-1234-5678', 2);
 
 INSERT INTO Postmen (WarehouseId, Name, Phone, IsActive)
-VALUES (1, N'Борис Михайлович Чернов', '+7-912-345-67-89', 3);
+VALUES (1, 'Борис Михайлович Чернов', '+7-912-345-67-89', 3);
 ```
 
 ### Backend
